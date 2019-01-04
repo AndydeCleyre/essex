@@ -7,7 +7,7 @@ module = "essex"
 author = "Andy Kluger"
 author-email = "AndyKluger@gmail.com"
 home-page = "https://github.com/AndydeCleyre/essex"
-classifiers = ["License :: OSI Approved :: MIT License"]
+license = "WTFPL"
 requires = ["plumbum >=1.6.7"]
 description-file = "README.rst"
 requires-python = "~=3.6"
