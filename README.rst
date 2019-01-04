@@ -20,7 +20,7 @@ Optional Dependencies:
 Installation
 ------------
 
-From PyPi:
+From PyPI:
 
 .. code-block:: sh
 
@@ -75,5 +75,5 @@ Packaging
     pip install -r requirements.txt
     # Create a wheel and source distribution in dist/
     flit build
-    # Create a wheel and source distribution in dist/ AND upload to PyPi:
+    # Create a wheel and source distribution in dist/ AND upload to PyPI:
     flit publish
