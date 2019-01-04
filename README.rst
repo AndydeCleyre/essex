@@ -70,8 +70,6 @@ Usage
 Packaging
 ---------
 
-Create a wheel and source distribution in `dist/`:
-
 .. code-block:: sh
 
     pip install -r requirements.txt
