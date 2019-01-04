@@ -1,0 +1,18 @@
+[build-system]
+requires = ["flit"]
+build-backend = "flit.buildapi"
+
+[tool.flit.metadata]
+module = "essex"
+author = "Andy Kluger"
+author-email = "AndyKluger@gmail.com"
+home-page = "https://github.com/andydecleyre/essex"
+classifiers = ["License :: OSI Approved :: MIT License"]
+requires = ["plumbum >=1.6.7"]
+description-file = "README.rst"
+requires-python = "~=3.6"
+keywords = "skarnet s6 execline supervise supervision"
+
+[tool.flit.scripts]
+essex = "essex.essex:main"
+_essex = "essex.essex_complete:main"
