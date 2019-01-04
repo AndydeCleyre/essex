@@ -33,7 +33,7 @@ Usage
 
 ::
 
-    essex 0.1
+    essex 0.1.1
 
     Simply manage services
 
