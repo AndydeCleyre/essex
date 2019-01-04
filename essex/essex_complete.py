@@ -1,16 +1,11 @@
 #!/usr/bin/env python3
 
-# complete -o dirnames -C /path/to/essex_complete.py essex
-
 import shlex
 from sys import argv
 from itertools import count
 from collections import defaultdict
 
 from plumbum import local
-# from plumbum.cli import Flag, SwitchAttr
-
-# import essex
 
 
 subcommands = (
@@ -35,38 +30,12 @@ opts.update({
     )
 })
 
-# flags = defaultdict(lambda: ('-h', '--help'))
-# # opts = defaultdict(lambda: ())
-# for appname, app in essex.__dict__.items():
-#     if appname.startswith('Essex'):
-#         # stopper, starter
-#         name = appname[len('Essex'):].lower() or 'essex'
-#         for attr in app.__dict__.values():
-#             if isinstance(attr, Flag):
-#                 suggest = tuple(
-#                     f"-{'-' * (len(f) > 1)}{f}"
-#                     for f in attr._switch_info.names
-#                 )
-#                 flags[name] += suggest
-            # elif isinstance(attr, SwitchAttr):
-            #     suggest = tuple(
-            #         f"-{'-' * (len(s) > 1)}{s}"
-            #         for s in attr._switch_info.names
-            #     )
-            #     opts[name] += suggest
-            #     print(opts)
-                # from IPython import embed; embed()
-                # print(app.__dict__)
-                # print(app.__dict__)
-
 hlp = ('-h', '--help')
 flags = defaultdict(lambda: hlp)
-flags.update({
-    'log': (*hlp, '-f', '--follow', '-a', '--all'),
-    'new': (*hlp, '-e', '--enable'),
-    'list': (*hlp, '-e', '--enabled'),
-    'status': (*hlp, '-e', '--enabled')
-})
+flags['log'] += ('-f', '--follow', '-a', '--all')
+flags['new'] += ('-e', '--enable')
+flags['list'] += ('-e', '--enabled')
+flags['status'] += ('-e', '--enabled')
 
 
 def get_subcmd(words):
