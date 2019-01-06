@@ -1,7 +1,7 @@
 Essex
 =====
 
-A command line interface for managing s6 services, using the s6 suite of tools.
+A command line interface for managing s6 services, using the s6 toolset
 
 Dependencies:
 
