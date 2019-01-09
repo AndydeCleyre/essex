@@ -29,7 +29,7 @@ def fail(r, out='', err=''):
 
 class ColorApp(Application):
     PROGNAME = green
-    VERSION = '0.1.1' | blue
+    VERSION = '0.2.0' | blue
     COLOR_USAGE = green
     COLOR_GROUPS = {
         'Meta-switches': magenta,
@@ -155,23 +155,31 @@ class Starter(ColorApp):
 class EssexCat(ColorApp):
     """View services' run, finish, and log commands"""
 
+    no_color = Flag(
+        ['n', 'no-color'],
+        help="do not colorize the output (for piping)"
+    )
+
     def display(self, docpath):
         title_cat = tail['-vn', '+1', docpath]
-        try:
-            (
-                title_cat |
-                local['highlight'][
-                    '--stdout', '-O', 'truecolor', '-s', 'lucretia', '-S', 'sh'
-                ]
-            ).run_fg()
-        except CommandNotFound:
+        if self.no_color:
+            title_cat.run_fg()
+        else:
             try:
                 (
                     title_cat |
-                    local['bat']['-p', '-l', 'sh']
+                    local['highlight'][
+                        '--stdout', '-O', 'truecolor', '-s', 'lucretia', '-S', 'sh'
+                    ]
                 ).run_fg()
             except CommandNotFound:
-                title_cat.run_fg()
+                try:
+                    (
+                        title_cat |
+                        local['bat']['-p', '-l', 'sh']
+                    ).run_fg()
+                except CommandNotFound:
+                    title_cat.run_fg()
         print('\n')
 
     def main(self, svc_name, *extra_svc_names):
