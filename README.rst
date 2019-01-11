@@ -8,9 +8,7 @@ Dependencies:
 	- Python 3.6+
 	- Plumbum
 	- s6
-	- lsof or BusyBox (lsof)
-	- psmisc or BusyBox (pstree)
-	- coreutils or BusyBox (tail)
+	- BusyBox or (lsof, psmisc, coreutils)
 
 Optional Dependencies:
 

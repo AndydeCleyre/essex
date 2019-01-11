@@ -29,7 +29,7 @@ def fail(r, out='', err=''):
 
 class ColorApp(Application):
     PROGNAME = green
-    VERSION = '0.2.0' | blue
+    VERSION = '0.2.1' | blue
     COLOR_USAGE = green
     COLOR_GROUPS = {
         'Meta-switches': magenta,
@@ -317,6 +317,7 @@ class EssexOn(ColorApp):
     """Start supervising all services"""
 
     def main(self):
+        self.parent.logs_dir.mkdir()
         r, out, err = s6_svscanctl[self.parent.svcs_dir].run(retcode=None)
         if r == 100:
             (
@@ -374,6 +375,20 @@ class EssexReload(Stopper, Starter):
                             self.stop(svc, announce=True)
                             self.start(svc, announce=True)
                             break
+
+
+@Essex.subcommand('pt')
+class EssexPapertrail(ColorApp):
+    """Print a sample Papertrail log_files.yml"""
+
+    def main(self, host='fake.papertrailapp.com', port=12345):
+        wildcard = f"  # - {self.parent.logs_dir}/*/current"
+        entries = '\n'.join('  - ' + log for log in (self.parent.logs_dir // '*/current'))
+        print(
+            f"files:\n{wildcard}\n{entries}\n"
+            f"destination:\n  host: {host}\n  port: {port}\n"
+            "protocol: tls"
+        )
 
 
 @Essex.subcommand('log')
