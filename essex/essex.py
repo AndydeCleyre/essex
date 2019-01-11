@@ -317,6 +317,7 @@ class EssexOn(ColorApp):
     """Start supervising all services"""
 
     def main(self):
+        self.parent.logs_dir.mkdir()
         r, out, err = s6_svscanctl[self.parent.svcs_dir].run(retcode=None)
         if r == 100:
             (
