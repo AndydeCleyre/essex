@@ -376,6 +376,20 @@ class EssexReload(Stopper, Starter):
                             break
 
 
+@Essex.subcommand('pt')
+class EssexPapertrail(ColorApp):
+    """Print a sample Papertrail log_files.yml"""
+
+    def main(self, host='fake.papertrailapp.com', port=12345):
+        wildcard = f"  # - {self.parent.logs_dir}/*/current"
+        entries = '\n'.join('  - ' + log for log in (self.parent.logs_dir // '*/current'))
+        print(
+            f"files:\n{wildcard}\n{entries}\n"
+            f"destination:\n  host: {host}\n  port: {port}\n"
+            "protocol: tls"
+        )
+
+
 @Essex.subcommand('log')
 class EssexLog(ColorApp):
     """View a service's log"""
