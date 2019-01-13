@@ -31,7 +31,7 @@ Usage
 
 ::
 
-    essex 0.1.1
+    essex 0.2.2
 
     Simply manage services
 
@@ -57,6 +57,7 @@ Usage
         new                                                   Create a new service
         off                                                   Stop all services and their supervision
         on                                                    Start supervising all services
+        pt                                                    Print a sample Papertrail log_files.yml
         reload                                                Restart (all or specified) running services whose run scripts have changed
         sig                                                   Send a signal to a service
         start                                                 Start individual services
@@ -64,6 +65,22 @@ Usage
         stop                                                  Stop individual services
         sync                                                  Start or stop services to match their configuration
         tree                                                  View the process tree from the supervision root
+
+Self-Contained Binary
+---------------------
+
+One can build a single-file executable suitable for dropping into an alpine-based container
+with s6 (no Python or Plumbum necessary), using docker and `pyinstaller-alpine`_.
+
+.. _pyinstaller-alpine: https://github.com/inn0kenty/pyinstaller-alpine
+
+From the inner `essex` folder:
+
+.. code-block:: sh
+
+    docker run --rm -v "${PWD}:/src" inn0kenty/pyinstaller-alpine:3.7 -F --clean ./essex.py
+
+It comes out to ~10MB.
 
 Packaging
 ---------
