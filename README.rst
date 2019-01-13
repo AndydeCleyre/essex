@@ -75,3 +75,19 @@ Packaging
     flit build
     # Create a wheel and source distribution in dist/ AND upload to PyPI:
     flit publish
+
+Self-Contained Binary
+---------------------
+
+One can build a single-file executable suitable for dropping into an alpine-based container
+with s6 (no Python or Plumbum necessary), using docker and `pyinstaller-alpine`_.
+
+.. _pyinstaller-alpine: https://github.com/inn0kenty/pyinstaller-alpine
+
+From the inner `essex` folder:
+
+.. code-block:: sh
+
+    docker run --rm -v "${PWD}:/src" inn0kenty/pyinstaller-alpine:3.7 -F --clean ./essex.py
+
+It comes out to ~10MB.
