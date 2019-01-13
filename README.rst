@@ -31,7 +31,7 @@ Usage
 
 ::
 
-    essex 0.1.1
+    essex 0.2.1
 
     Simply manage services
 
@@ -57,6 +57,7 @@ Usage
         new                                                   Create a new service
         off                                                   Stop all services and their supervision
         on                                                    Start supervising all services
+        pt                                                    Print a sample Papertrail log_files.yml
         reload                                                Restart (all or specified) running services whose run scripts have changed
         sig                                                   Send a signal to a service
         start                                                 Start individual services
@@ -64,17 +65,6 @@ Usage
         stop                                                  Stop individual services
         sync                                                  Start or stop services to match their configuration
         tree                                                  View the process tree from the supervision root
-
-Packaging
----------
-
-.. code-block:: sh
-
-    pip install -r requirements.txt
-    # Create a wheel and source distribution in dist/
-    flit build
-    # Create a wheel and source distribution in dist/ AND upload to PyPI:
-    flit publish
 
 Self-Contained Binary
 ---------------------
@@ -91,3 +81,14 @@ From the inner `essex` folder:
     docker run --rm -v "${PWD}:/src" inn0kenty/pyinstaller-alpine:3.7 -F --clean ./essex.py
 
 It comes out to ~10MB.
+
+Packaging
+---------
+
+.. code-block:: sh
+
+    pip install -r requirements.txt
+    # Create a wheel and source distribution in dist/
+    flit build
+    # Create a wheel and source distribution in dist/ AND upload to PyPI:
+    flit publish
