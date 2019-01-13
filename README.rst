@@ -31,7 +31,7 @@ Usage
 
 ::
 
-    essex 0.2.1
+    essex 0.2.2
 
     Simply manage services
 
