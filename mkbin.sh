@@ -15,7 +15,10 @@
 # /etc/sysctl.d/96-userns.conf should contain:
 # kernel.unprivileged_userns_clone = 1
 
+VER=0.2.2
 ctnr=`buildah from docker://inn0kenty/pyinstaller-alpine:3.7`
 buildah run -v "$PWD/essex:/src" $ctnr -- /pyinstaller/pyinstaller.sh -F essex.py
 buildah rm $ctnr
 rm -rf essex/__pycache__ essex/build essex/essex.spec
+cd essex/dist
+tar cfJ essex-$VER-x86_64.tar.xz essex
