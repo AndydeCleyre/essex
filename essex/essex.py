@@ -381,7 +381,15 @@ class EssexReload(Stopper, Starter):
 class EssexPapertrail(ColorApp):
     """Print a sample Papertrail log_files.yml"""
 
+    interactive = Flag(
+        ['i', 'interactive'],
+        help="interactively ask the user for host and port"
+    )
+
     def main(self, host='fake.papertrailapp.com', port=12345):
+        if self.interactive:
+            host = input("Papertrail host: ")
+            port = input("Papertrail port: ")
         entries = '\n'.join(
             f"  - tag: {log.up().name}\n"
             f"    path: {log}"
