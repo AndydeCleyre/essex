@@ -9,6 +9,7 @@ Dependencies:
 	- Plumbum
 	- s6
 	- BusyBox or (lsof, psmisc, coreutils)
+	- musl-utils or glibc
 
 Optional Dependencies:
 

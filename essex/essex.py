@@ -8,7 +8,7 @@ from plumbum.cli import Application, Flag, SwitchAttr, Range, Set
 from plumbum.colors import blue, magenta, green, red, yellow
 from plumbum.cmd import (
     s6_log, s6_svc, s6_svscan, s6_svscanctl, s6_svstat,
-    fdmove, lsof, pstree, tail
+    fdmove, lsof, pstree, tail, getent, id as uid
 )
 
 # TO DO / CONSIDER:
@@ -546,6 +546,13 @@ class EssexNew(ColorApp):
         if self.svc.exists():
             fail(1, f"{self.svc} already exists!")
         self.cmd = cmd
+        if self.as_user and ':' in self.as_user:
+            user, group = self.as_user.split(':', 1)
+            if not user.isnumeric():
+                user = uid('-u', user).strip()
+            if not group.isnumeric():
+                group = getent('group', group).split(':')[2]
+            self.as_user = f"{user}:{group}"
         self.mk_runfile()
         self.mk_logger()
         if not self.enabled:
