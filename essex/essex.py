@@ -386,7 +386,7 @@ class EssexPapertrail(ColorApp):
         help="interactively ask the user for host and port"
     )
 
-    def main(self, host='fake.papertrailapp.com', port=12345):
+    def main(self, host='{{ PAPERTRAIL_HOST }}', port='{{ PAPERTRAIL_PORT }}'):
         if self.interactive:
             host = input("Papertrail host: ")
             port = input("Papertrail port: ")
