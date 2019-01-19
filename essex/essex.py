@@ -8,7 +8,7 @@ from plumbum.cli import Application, Flag, SwitchAttr, Range, Set
 from plumbum.colors import blue, magenta, green, red, yellow
 from plumbum.cmd import (
     s6_log, s6_svc, s6_svscan, s6_svscanctl, s6_svstat,
-    fdmove, lsof, pstree, tail
+    fdmove, lsof, pstree, tail, getent, readlink, id as uid
 )
 
 # TO DO / CONSIDER:
@@ -275,9 +275,20 @@ class EssexTree(ColorApp):
 
     def main(self):
         self.parent.fail_if_unsupervised()
-        pstree[
-            '-apT', lsof('-t', self.parent.svcs_dir / '.s6-svscan' / 'control').splitlines()[0]
-        ].run_fg()
+        try:
+            readlink(lsof)  # busybox
+        except:
+            root = lsof('-t', self.parent.svcs_dir / '.s6-svscan' / 'control').splitlines()[0]
+            tree = pstree['-apT', root]()
+        else:
+            root = next(filter(
+                lambda p: p.endswith('/.s6-svscan/control'),
+                lsof(
+                    self.parent.svcs_dir / '.s6-svscan' / 'control'
+                ).splitlines()
+            )).split()[0]
+            tree = pstree['-p', root]()
+        print(tree)
 
 
 @Essex.subcommand('enable')
@@ -381,13 +392,27 @@ class EssexReload(Stopper, Starter):
 class EssexPapertrail(ColorApp):
     """Print a sample Papertrail log_files.yml"""
 
-    def main(self, host='fake.papertrailapp.com', port=12345):
-        wildcard = f"  # - {self.parent.logs_dir}/*/current"
-        entries = '\n'.join('  - ' + log for log in (self.parent.logs_dir // '*/current'))
+    interactive = Flag(
+        ['i', 'interactive'],
+        help="interactively ask the user for host and port"
+    )
+
+    def main(self, host='{{ PAPERTRAIL_HOST }}', port='{{ PAPERTRAIL_PORT }}'):
+        if self.interactive:
+            host = input("Papertrail host: ")
+            port = input("Papertrail port: ")
+        entries = '\n'.join(
+            f"  - tag: {log.up().name}\n"
+            f"    path: {log}"
+            for log in (self.parent.logs_dir // '*/current')
+        )
         print(
-            f"files:\n{wildcard}\n{entries}\n"
-            f"destination:\n  host: {host}\n  port: {port}\n"
-            "protocol: tls"
+            f"files:",
+              f"{entries}",
+            f"destination:",
+            f"  host: {host}",
+            f"  port: {port}",
+            "protocol: tls", sep='\n'
         )
 
 
@@ -532,6 +557,13 @@ class EssexNew(ColorApp):
         if self.svc.exists():
             fail(1, f"{self.svc} already exists!")
         self.cmd = cmd
+        if self.as_user and ':' in self.as_user:
+            user, group = self.as_user.split(':', 1)
+            if not user.isnumeric():
+                user = uid('-u', user).strip()
+            if not group.isnumeric():
+                group = getent('group', group).split(':')[2]
+            self.as_user = f"{user}:{group}"
         self.mk_runfile()
         self.mk_logger()
         if not self.enabled:
