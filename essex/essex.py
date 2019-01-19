@@ -8,7 +8,7 @@ from plumbum.cli import Application, Flag, SwitchAttr, Range, Set
 from plumbum.colors import blue, magenta, green, red, yellow
 from plumbum.cmd import (
     s6_log, s6_svc, s6_svscan, s6_svscanctl, s6_svstat,
-    fdmove, lsof, pstree, tail, getent, id as uid
+    fdmove, lsof, pstree, tail, getent, readlink, id as uid
 )
 
 # TO DO / CONSIDER:
@@ -275,9 +275,20 @@ class EssexTree(ColorApp):
 
     def main(self):
         self.parent.fail_if_unsupervised()
-        pstree[
-            '-apT', lsof('-t', self.parent.svcs_dir / '.s6-svscan' / 'control').splitlines()[0]
-        ].run_fg()
+        try:
+            readlink(lsof)  # busybox
+        except:
+            root = lsof('-t', self.parent.svcs_dir / '.s6-svscan' / 'control').splitlines()[0]
+            tree = pstree['-apT', root]()
+        else:
+            root = next(filter(
+                lambda p: p.endswith('/.s6-svscan/control'),
+                lsof(
+                    self.parent.svcs_dir / '.s6-svscan' / 'control'
+                ).splitlines()
+            )).split()[0]
+            tree = pstree['-p', root]()
+        print(tree)
 
 
 @Essex.subcommand('enable')
