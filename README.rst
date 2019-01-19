@@ -16,7 +16,9 @@ Optional Dependencies:
 	- lnav or multitail
 	- highlight or bat
 
-[Demo Video](https://streamable.com/oek3d)
+`Demo Video`_
+
+.. _Demo Video: https://streamable.com/oek3d
 
 Installation
 ------------
