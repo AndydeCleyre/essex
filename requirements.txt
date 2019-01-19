@@ -3,6 +3,7 @@ chardet==3.0.4            # via requests
 docutils==0.14            # via flit
 flit==1.2.1
 idna==2.8                 # via requests
+pygments==2.3.1
 pytoml==0.1.20            # via flit
 requests==2.21.0          # via flit
 urllib3==1.24.1           # via requests
