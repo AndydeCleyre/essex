@@ -27,6 +27,12 @@ From PyPI:
     # activate bash completion:
     complete -o dirnames -C _essex essex
 
+From 64-bit musl binary release:
+
+.. code-block:: sh
+
+    wget "https://github.com/AndydeCleyre/essex/releases/download/0.3.0/essex-0.3.0-x86_64.tar.xz" -O - | tar xJf - -C /usr/local/bin
+
 Usage
 -----
 
