@@ -27,12 +27,18 @@ From PyPI:
     # activate bash completion:
     complete -o dirnames -C _essex essex
 
+From 64-bit musl binary release:
+
+.. code-block:: sh
+
+    wget "https://github.com/AndydeCleyre/essex/releases/download/0.3.0/essex-0.3.0-x86_64.tar.xz" -O - | tar xJf - -C /usr/local/bin
+
 Usage
 -----
 
 ::
 
-    essex 0.2.2
+    essex 0.3.0
 
     Simply manage services
 
@@ -45,21 +51,27 @@ Usage
         -v, --version                                         Prints the program's version and quits
 
     Switches:
-        -d, --directory SERVICES_DIRECTORY:str                folder of services to manage; the default is the first existing match from ('./svcs', '~/svcs',
-                                                              '/etc/svcs', '/svcs'), unless a colon-delimited SERVICES_PATHS env var exists;
-        -l, --logs-directory SERVICES_LOGS_DIRECTORY:str      folder of services' log files; the default is SERVICES_DIRECTORY/../svcs-logs
+        -d, --directory SERVICES_DIRECTORY:str                folder of services to manage; the default is the first
+                                                              existing match from ('./svcs', '~/svcs', '/etc/svcs',
+                                                              '/svcs'), unless a colon-delimited SERVICES_PATHS env var
+                                                              exists;
+        -l, --logs-directory SERVICES_LOGS_DIRECTORY:str      folder of services' log files; the default is
+                                                              SERVICES_DIRECTORY/../svcs-logs
 
     Sub-commands:
         cat                                                   View services' run, finish, and log commands
-        disable                                               Configure individual services to be down, without actually stopping them
-        enable                                                Configure individual services to be up, without actually starting them
+        disable                                               Configure individual services to be down, without actually
+                                                              stopping them
+        enable                                                Configure individual services to be up, without actually
+                                                              starting them
         list                                                  List all known services
         log                                                   View a service's log
         new                                                   Create a new service
         off                                                   Stop all services and their supervision
         on                                                    Start supervising all services
         pt                                                    Print a sample Papertrail log_files.yml
-        reload                                                Restart (all or specified) running services whose run scripts have changed
+        reload                                                Restart (all or specified) running services whose run scripts
+                                                              have changed
         sig                                                   Send a signal to a service
         start                                                 Start individual services
         status                                                View the current states of (all or specified) services
