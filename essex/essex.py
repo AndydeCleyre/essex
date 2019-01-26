@@ -43,7 +43,7 @@ class Essex(ColorApp):
     """Simply manage services"""
 
     SUBCOMMAND_HELPMSG = False
-    DEFAULT_PATHS = ('./svcs', '~/svcs', '/etc/svcs', '/svcs')
+    DEFAULT_PATHS = ('./svcs', '~/svcs', '/var/svcs', '/svcs')
 
     svcs_dir = SwitchAttr(
         ['d', 'directory'],
