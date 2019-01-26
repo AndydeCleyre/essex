@@ -573,11 +573,12 @@ class EssexNew(ColorApp):
         self.svc.mkdir()
         runfile = self.svc / 'run'
         shebang = ('#!/bin/execlineb -P', '')
+        cmd = (self.cmd, "Do the thing")
+        err_to_out = ('fdmove -c 2 1', "Send stderr to stdout")
         hash_run = (
             'foreground { redirfd -w 1 run.md5 md5sum run }',
             "Generate hashfile, to detect changes since launch"
         )
-        err_to_out = ('fdmove -c 2 1', "Send stderr to stdout")
         set_user = (
             f's6-setuidgid {self.as_user}', "Run as this user"
         ) if self.as_user else None
@@ -585,20 +586,21 @@ class EssexNew(ColorApp):
             f'cd {local.path(self.working_dir)}', "Enter working directory"
         ) if self.working_dir else None
         runfile.write(columnize_comments(*filter(None, (
-            shebang, hash_run, err_to_out, set_user, working_dir, (self.cmd, "Do the thing")
+            shebang, err_to_out, hash_run, set_user, working_dir, cmd
         ))))
         runfile.chmod(0o755)
         if self.on_finish:
             runfile = self.svc / 'finish'
+            shebang = ('#!/bin/execlineb', '')
+            cmd = (self.on_finish, "Do the thing")
             runfile.write(columnize_comments(*filter(None, (
-                ('#!/bin/execlineb', ''), err_to_out, set_user, (self.on_finish, "Do the thing")
+                shebang, err_to_out, set_user, cmd
             ))))
             runfile.chmod(0o755)
 
     def mk_logger(self):
         logger = self.svc / 'log'
         logger.mkdir()
-        # (self.parent.logs_dir / self.svc.name).mkdir()
         runfile = logger / 'run'
         shebang = ('#!/bin/execlineb -P', '')
         hash_run = (
