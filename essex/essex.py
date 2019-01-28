@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-import sys
+import re, sys
 from contextlib import suppress
 from hashlib import md5
 
-from plumbum import local, CommandNotFound
+from plumbum import local, CommandNotFound, ProcessExecutionError
 from plumbum.cli import Application, Flag, SwitchAttr, Range, Set
 from plumbum.colors import blue, magenta, green, red, yellow
 from plumbum.cmd import (
@@ -135,7 +135,10 @@ class Stopper(ColorApp):
             fail(r, out, err)
 
     def is_up(self, svc):
-        return s6_svstat('-o', 'up', svc).strip() == 'true'
+        try:
+            return s6_svstat('-o', 'up', svc).strip() == 'true'
+        except ProcessExecutionError:
+            return False
 
 
 class Starter(ColorApp):
