@@ -51,7 +51,7 @@ def get_subcmd(words):
             return words[idx]
 
 
-def get_svcs_dir(words, defaults=('./svcs', '~/svcs', '/etc/svcs', '/svcs')):
+def get_svcs_dir(words, defaults=('./svcs', '~/svcs', '/var/svcs', '/svcs')):
     for idx in (1, 3):
         if idx < len(words) and words[idx] in ('-d', '--directory'):
             return local.path(words[idx + 1])
