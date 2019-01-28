@@ -184,15 +184,20 @@ class EssexCat(ColorApp):
 
     def main(self, svc_name, *extra_svc_names):
         for svc in self.parent.svc_map((svc_name, *extra_svc_names)):
+            found = False
             for file in ('run', 'finish', 'crash'):
-                # if (doc := svc / file).is_file():
-                doc = svc / file  #
-                if doc.is_file():  #
-                    self.display(doc)
+                # if (runfile := svc / file).is_file():
+                runfile = svc / file  #
+                if runfile.is_file():  #
+                    self.display(runfile)
+                    found = True
             # if (logger := svc / 'log' / 'run').is_file():
             logger = svc / 'log' / 'run'  #
             if logger.is_file():  #
                 self.display(logger)
+                found = True
+            if not found:
+                warn(f"{svc} doesn't exist")
 
 
 @Essex.subcommand('start')
