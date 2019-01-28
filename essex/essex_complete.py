@@ -36,6 +36,7 @@ flags['log'] += ('-f', '--follow', '-a', '--all')
 flags['new'] += ('-e', '--enable')
 flags['list'] += ('-e', '--enabled')
 flags['status'] += ('-e', '--enabled')
+flags['tree'] += ('-q', '--quiet')
 
 
 def get_subcmd(words):

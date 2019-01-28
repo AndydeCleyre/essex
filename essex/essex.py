@@ -281,20 +281,43 @@ class EssexStatus(ColorApp):
 class EssexTree(ColorApp):
     """View the process tree from the supervision root"""
 
+    quiet = Flag(
+        ['q', 'quiet'],
+        help=(
+            "don't print childless supervisors, s6-log processes, or s6-log supervisors; "
+            "has no effect when pstree is provided by busybox"
+        )
+    )
+
     def main(self):
         self.parent.fail_if_unsupervised()
         try:
-            readlink(lsof)  # busybox
-        except:
+            readlink(lsof)
+        except:  # real lsof
             root = lsof('-t', self.parent.svcs_dir / '.s6-svscan' / 'control').splitlines()[0]
-            tree = pstree['-apT', root]()
-        else:
+        else:  # busybox lsof
             root = next(filter(
                 lambda p: p.endswith('/.s6-svscan/control'),
                 lsof(
                     self.parent.svcs_dir / '.s6-svscan' / 'control'
                 ).splitlines()
             )).split()[0]
+        try:
+            readlink(pstree)
+        except:  # real pstree
+            tree = pstree['-apT', root]()
+            if self.quiet:
+                tl = tree.splitlines()
+                whitelist = set(range(len(tl)))
+                for i, line in enumerate(tl):
+                    if re.match(r'^ +(\||`)-s6-supervise,', line):  # supervisor
+                        if i + 1 == len(tl) or re.match(r'^ +(\||`)-s6-supervise,', tl[i + 1]):
+                            whitelist.discard(i)
+                    elif re.match(r'^ +\| +`-s6-log,', line):  # logger
+                        whitelist.discard(i)
+                        whitelist.discard(i - 1)
+                tree = '\n'.join(tl[i] for i in sorted(whitelist))
+        else:  # busybox pstree
             tree = pstree['-p', root]()
         print(tree)
 
