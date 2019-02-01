@@ -29,7 +29,7 @@ def fail(r, out='', err=''):
 
 class ColorApp(Application):
     PROGNAME = green
-    VERSION = '1.0.0' | blue
+    VERSION = '1.1.0' | blue
     COLOR_USAGE = green
     COLOR_GROUPS = {
         'Meta-switches': magenta,
@@ -408,7 +408,7 @@ class EssexSync(Stopper, Starter):
 
 @Essex.subcommand('reload')
 class EssexReload(Stopper, Starter):
-    """Restart (all or specified) running services whose run scripts have changed; Depends on the runfile generating an adjacent run.md5 file, like essex-generated ones"""
+    """Restart (all or specified) running services whose run scripts have changed; Depends on the runfile generating an adjacent run.md5 file, like essex-generated runfiles do"""
 
     def main(self, *svc_names):
         self.parent.fail_if_unsupervised()
