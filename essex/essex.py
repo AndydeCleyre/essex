@@ -155,8 +155,8 @@ class Starter(ColorApp):
             # warn(out, err)
 
 
-@Essex.subcommand('cat')
-class EssexCat(ColorApp):
+@Essex.subcommand('print')
+class EssexPrint(ColorApp):
     """View services' run, finish, and log commands"""
 
     no_color = Flag(
@@ -202,6 +202,11 @@ class EssexCat(ColorApp):
                 found = True
             if not found:
                 warn(f"{svc} doesn't exist")
+
+
+@Essex.subcommand('cat')
+class EssexCat(EssexPrint):
+    """View services' run, finish, and log commands; Alias for print"""
 
 
 @Essex.subcommand('start')
@@ -663,8 +668,8 @@ class EssexNew(ColorApp):
 def main():
     for app in (
         EssexCat, EssexDisable, EssexEnable, EssexList, EssexLog, EssexNew,
-        EssexOff, EssexOn, EssexSignal, EssexStart, EssexStatus, EssexStop,
-        EssexSync, EssexTree
+        EssexOff, EssexOn, EssexPrint, EssexSignal, EssexStart, EssexStatus,
+        EssexStop, EssexSync, EssexTree
     ):
         app.unbind_switches('help-all', 'v', 'version')
     Essex()
