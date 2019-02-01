@@ -137,7 +137,8 @@ class Stopper(ColorApp):
     def is_up(self, svc):
         try:
             return s6_svstat('-o', 'up', svc).strip() == 'true'
-        except ProcessExecutionError:
+        except ProcessExecutionError as e:
+            warn(str(e))
             return False
 
 
