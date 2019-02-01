@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-import sys
+import re, sys
 from contextlib import suppress
 from hashlib import md5
 
-from plumbum import local, CommandNotFound
+from plumbum import local, CommandNotFound, ProcessExecutionError
 from plumbum.cli import Application, Flag, SwitchAttr, Range, Set
 from plumbum.colors import blue, magenta, green, red, yellow
 from plumbum.cmd import (
@@ -29,7 +29,7 @@ def fail(r, out='', err=''):
 
 class ColorApp(Application):
     PROGNAME = green
-    VERSION = '1.0.0' | blue
+    VERSION = '1.1.0' | blue
     COLOR_USAGE = green
     COLOR_GROUPS = {
         'Meta-switches': magenta,
@@ -135,7 +135,11 @@ class Stopper(ColorApp):
             fail(r, out, err)
 
     def is_up(self, svc):
-        return s6_svstat('-o', 'up', svc).strip() == 'true'
+        try:
+            return s6_svstat('-o', 'up', svc).strip() == 'true'
+        except ProcessExecutionError as e:
+            warn(str(e))
+            return False
 
 
 class Starter(ColorApp):
@@ -151,8 +155,8 @@ class Starter(ColorApp):
             # warn(out, err)
 
 
-@Essex.subcommand('cat')
-class EssexCat(ColorApp):
+@Essex.subcommand('print')
+class EssexPrint(ColorApp):
     """View services' run, finish, and log commands"""
 
     no_color = Flag(
@@ -184,15 +188,25 @@ class EssexCat(ColorApp):
 
     def main(self, svc_name, *extra_svc_names):
         for svc in self.parent.svc_map((svc_name, *extra_svc_names)):
+            found = False
             for file in ('run', 'finish', 'crash'):
-                # if (doc := svc / file).is_file():
-                doc = svc / file  #
-                if doc.is_file():  #
-                    self.display(doc)
+                # if (runfile := svc / file).is_file():
+                runfile = svc / file  #
+                if runfile.is_file():  #
+                    self.display(runfile)
+                    found = True
             # if (logger := svc / 'log' / 'run').is_file():
             logger = svc / 'log' / 'run'  #
             if logger.is_file():  #
                 self.display(logger)
+                found = True
+            if not found:
+                warn(f"{svc} doesn't exist")
+
+
+@Essex.subcommand('cat')
+class EssexCat(EssexPrint):
+    """View services' run, finish, and log commands; Alias for print"""
 
 
 @Essex.subcommand('start')
@@ -273,20 +287,43 @@ class EssexStatus(ColorApp):
 class EssexTree(ColorApp):
     """View the process tree from the supervision root"""
 
+    quiet = Flag(
+        ['q', 'quiet'],
+        help=(
+            "don't print childless supervisors, s6-log processes, or s6-log supervisors; "
+            "has no effect when pstree is provided by busybox"
+        )
+    )
+
     def main(self):
         self.parent.fail_if_unsupervised()
         try:
-            readlink(lsof)  # busybox
-        except:
+            readlink(lsof)
+        except:  # real lsof
             root = lsof('-t', self.parent.svcs_dir / '.s6-svscan' / 'control').splitlines()[0]
-            tree = pstree['-apT', root]()
-        else:
+        else:  # busybox lsof
             root = next(filter(
                 lambda p: p.endswith('/.s6-svscan/control'),
                 lsof(
                     self.parent.svcs_dir / '.s6-svscan' / 'control'
                 ).splitlines()
             )).split()[0]
+        try:
+            readlink(pstree)
+        except:  # real pstree
+            tree = pstree['-apT', root]()
+            if self.quiet:
+                tl = tree.splitlines()
+                whitelist = set(range(len(tl)))
+                for i, line in enumerate(tl):
+                    if re.match(r'^ +(\||`)-s6-supervise,', line):  # supervisor
+                        if i + 1 == len(tl) or re.match(r'^ +(\||`)-s6-supervise,', tl[i + 1]):
+                            whitelist.discard(i)
+                    elif re.match(r'^ +\| +`-s6-log,', line):  # logger
+                        whitelist.discard(i)
+                        whitelist.discard(i - 1)
+                tree = '\n'.join(tl[i] for i in sorted(whitelist))
+        else:  # busybox pstree
             tree = pstree['-p', root]()
         print(tree)
 
@@ -371,7 +408,7 @@ class EssexSync(Stopper, Starter):
 
 @Essex.subcommand('reload')
 class EssexReload(Stopper, Starter):
-    """Restart (all or specified) running services whose run scripts have changed"""
+    """Restart (all or specified) running services whose run scripts have changed; Depends on the runfile generating an adjacent run.md5 file, like essex-generated runfiles do"""
 
     def main(self, *svc_names):
         self.parent.fail_if_unsupervised()
@@ -631,8 +668,8 @@ class EssexNew(ColorApp):
 def main():
     for app in (
         EssexCat, EssexDisable, EssexEnable, EssexList, EssexLog, EssexNew,
-        EssexOff, EssexOn, EssexSignal, EssexStart, EssexStatus, EssexStop,
-        EssexSync, EssexTree
+        EssexOff, EssexOn, EssexPrint, EssexSignal, EssexStart, EssexStatus,
+        EssexStop, EssexSync, EssexTree
     ):
         app.unbind_switches('help-all', 'v', 'version')
     Essex()
