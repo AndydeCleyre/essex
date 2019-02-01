@@ -1,7 +1,7 @@
 Essex
 =====
 
-A command line interface for managing s6 services, using the s6 toolset
+A command line interface for creating & managing s6 services, using the s6 toolset
 
 Dependencies:
 
@@ -35,7 +35,7 @@ From 64-bit musl binary release:
 
 .. code-block:: sh
 
-    wget "https://github.com/AndydeCleyre/essex/releases/download/1.0.0/essex-1.0.0-x86_64.tar.xz" -O - | tar xJf - -C /usr/local/bin
+    wget "https://github.com/AndydeCleyre/essex/releases/download/1.1.0/essex-1.1.0-x86_64.tar.xz" -O - | tar xJf - -C /usr/local/bin
     # activate bash completion:
     complete -o dirnames -C _essex essex
 
@@ -44,7 +44,7 @@ Usage
 
 ::
 
-    essex 1.0.0
+    essex 1.1.0
 
     Simply manage services
 
@@ -62,7 +62,7 @@ Usage
         -l, --logs-directory SERVICES_LOGS_DIRECTORY:str      folder of services' log files; the default is SERVICES_DIRECTORY/../svcs-logs
 
     Sub-commands:
-        cat                                                   View services' run, finish, and log commands
+        cat                                                   View services' run, finish, and log commands; Alias for print
         disable                                               Configure individual services to be down, without actually stopping them
         enable                                                Configure individual services to be up, without actually starting them
         list                                                  List all known services
@@ -70,8 +70,10 @@ Usage
         new                                                   Create a new service
         off                                                   Stop all services and their supervision
         on                                                    Start supervising all services
+        print                                                 View services' run, finish, and log commands
         pt                                                    Print a sample Papertrail log_files.yml
-        reload                                                Restart (all or specified) running services whose run scripts have changed
+        reload                                                Restart (all or specified) running services whose run scripts have changed; Depends on the runfile
+                                                              generating an adjacent run.md5 file, like essex-generated runfiles do
         sig                                                   Send a signal to a service
         start                                                 Start individual services
         status                                                View the current states of (all or specified) services
