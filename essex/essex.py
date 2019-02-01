@@ -403,7 +403,7 @@ class EssexSync(Stopper, Starter):
 
 @Essex.subcommand('reload')
 class EssexReload(Stopper, Starter):
-    """Restart (all or specified) running services whose run scripts have changed"""
+    """Restart (all or specified) running services whose run scripts have changed; Depends on the runfile generating an adjacent run.md5 file, like essex-generated ones"""
 
     def main(self, *svc_names):
         self.parent.fail_if_unsupervised()
