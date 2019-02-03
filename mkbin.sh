@@ -22,5 +22,6 @@ buildah run -v "$PWD/essex:/src" $ctnr -- /pyinstaller/pyinstaller.sh -F essex_c
 buildah rm $ctnr
 rm -rf essex/__pycache__ essex/build essex/*.spec
 cd essex/dist
-tar cfJ essex-$version-x86_64.tar.xz essex _essex
+wget -O plumbum_license "https://raw.githubusercontent.com/tomerfiliba/plumbum/master/LICENSE"
+tar cfJ essex-$version-x86_64.tar.xz essex _essex plumbum_license
 ls -lh

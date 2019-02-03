@@ -36,8 +36,8 @@ From 64-bit musl binary release:
 .. code-block:: sh
 
     wget "https://github.com/AndydeCleyre/essex/releases/download/1.1.0/essex-1.1.0-x86_64.tar.xz" -O - | tar xJf - -C /usr/local/bin
-    # activate bash completion:
-    complete -o dirnames -C _essex essex
+    rm /usr/local/bin/plumbum_license  # MIT
+    complete -o dirnames -C _essex essex  # bash completion
 
 Usage
 -----
