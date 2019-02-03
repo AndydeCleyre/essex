@@ -138,7 +138,7 @@ class Stopper(ColorApp):
         try:
             return s6_svstat('-o', 'up', svc).strip() == 'true'
         except ProcessExecutionError as e:
-            warn(str(e))
+            warn(f"{e}")
             return False
 
 
@@ -279,6 +279,29 @@ class EssexStatus(ColorApp):
             else:
                 warn(f"{svc} doesn't exist")
                 errors = True
+        if errors:
+            fail(1)
+
+
+@Essex.subcommand('pid')
+class EssexPid(ColorApp):
+    """Print the PIDs of running services"""
+
+    def main(self, svc_name, *extra_svc_names):
+        self.parent.fail_if_unsupervised()
+        errors = False
+        for svc in self.parent.svc_map((svc_name, *extra_svc_names)):
+            try:
+                pid = s6_svstat('-p', svc).strip()
+            except ProcessExecutionError as e:
+                warn(f"{e}")
+                errors = True
+            else:
+                if pid == '-1':
+                    warn(f"{svc} is not running")
+                    errors = True
+                else:
+                    print(pid)
         if errors:
             fail(1)
 
@@ -668,8 +691,8 @@ class EssexNew(ColorApp):
 def main():
     for app in (
         EssexCat, EssexDisable, EssexEnable, EssexList, EssexLog, EssexNew,
-        EssexOff, EssexOn, EssexPrint, EssexSignal, EssexStart, EssexStatus,
-        EssexStop, EssexSync, EssexTree
+        EssexOff, EssexOn, EssexPid, EssexPrint, EssexReload, EssexSignal,
+        EssexStart, EssexStatus, EssexStop, EssexSync, EssexTree
     ):
         app.unbind_switches('help-all', 'v', 'version')
     Essex()

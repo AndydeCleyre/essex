@@ -9,7 +9,7 @@ from plumbum import local
 
 
 subcommands = (
-    'cat', 'disable', 'enable', 'list', 'log', 'new', 'off', 'on',
+    'cat', 'disable', 'enable', 'list', 'log', 'new', 'off', 'on', 'pid',
     'print', 'reload', 'sig', 'start', 'status', 'stop', 'sync', 'tree'
 )
 signals = (
