@@ -14,6 +14,9 @@
 # To enable for subsequent sessions,
 # /etc/sysctl.d/96-userns.conf should contain:
 # kernel.unprivileged_userns_clone = 1
+#
+# To use overlay storage driver as regular user,
+# install fuse-overlayfs
 
 version=1.1.0
 ctnr=`buildah from docker://inn0kenty/pyinstaller-alpine:3.7`
