@@ -27,4 +27,5 @@ rm -rf essex/__pycache__ essex/build essex/*.spec
 cd essex/dist
 wget -O plumbum_license "https://raw.githubusercontent.com/tomerfiliba/plumbum/master/LICENSE"
 tar cfJ essex-$version-x86_64.tar.xz essex _essex plumbum_license
+pwd
 ls -lh
