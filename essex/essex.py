@@ -157,7 +157,7 @@ class Starter(ColorApp):
 
 @Essex.subcommand('print')
 class EssexPrint(ColorApp):
-    """View services' run, finish, and log commands"""
+    """View (all or specified) services' run, finish, and log commands"""
 
     no_color = Flag(
         ['n', 'no-color'],
@@ -173,7 +173,7 @@ class EssexPrint(ColorApp):
                 (
                     title_cat |
                     local['highlight'][
-                        '--stdout', '-O', 'truecolor', '-s', 'lucretia', '-S', 'sh'
+                        '--stdout', '-O', 'truecolor', '-s', 'moria', '-S', 'sh'
                     ]
                 ).run_fg()
             except CommandNotFound:
@@ -186,8 +186,9 @@ class EssexPrint(ColorApp):
                     title_cat.run_fg()
         print('\n')
 
-    def main(self, svc_name, *extra_svc_names):
-        for svc in self.parent.svc_map((svc_name, *extra_svc_names)):
+    def main(self, *svc_names):
+        errors = False
+        for svc in self.parent.svc_map(svc_names or self.parent.svcs):
             found = False
             for file in ('run', 'finish', 'crash'):
                 # if (runfile := svc / file).is_file():
@@ -202,11 +203,14 @@ class EssexPrint(ColorApp):
                 found = True
             if not found:
                 warn(f"{svc} doesn't exist")
+                errors = True
+        if errors:
+            fail(1)
 
 
 @Essex.subcommand('cat')
 class EssexCat(EssexPrint):
-    """View services' run, finish, and log commands; Alias for print"""
+    """View (all or specified) services' run, finish, and log commands; Alias for print"""
 
 
 @Essex.subcommand('start')
