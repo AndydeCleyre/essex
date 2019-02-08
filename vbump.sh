@@ -1,5 +1,8 @@
 #!/bin/sh
-[[ "$#" -gt 0 ]] || exit
+if [[ "$#" -eq 0 ]]; then
+    echo "Provide new version as argument"
+    exit 1
+fi
 sed -E -i "s/^(__version__ = ')(\.|[0-9])*('.*)/\1$1\3/" essex/__init__.py
 sed -E -i "s/^( *VERSION = ')(\.|[0-9])*('.*)/\1$1\3/" essex/essex.py
 sed -E -i "s/^(version=).*/\1$1/" mkbin.sh
