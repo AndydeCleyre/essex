@@ -29,7 +29,7 @@ def fail(r, out='', err=''):
 
 class ColorApp(Application):
     PROGNAME = green
-    VERSION = '1.1.0' | blue
+    VERSION = '1.2.0' | blue
     COLOR_USAGE = green
     COLOR_GROUPS = {
         'Meta-switches': magenta,
@@ -138,7 +138,7 @@ class Stopper(ColorApp):
         try:
             return s6_svstat('-o', 'up', svc).strip() == 'true'
         except ProcessExecutionError as e:
-            warn(str(e))
+            warn(f"{e}")
             return False
 
 
@@ -157,7 +157,7 @@ class Starter(ColorApp):
 
 @Essex.subcommand('print')
 class EssexPrint(ColorApp):
-    """View services' run, finish, and log commands"""
+    """View (all or specified) services' run, finish, and log commands"""
 
     no_color = Flag(
         ['n', 'no-color'],
@@ -173,7 +173,7 @@ class EssexPrint(ColorApp):
                 (
                     title_cat |
                     local['highlight'][
-                        '--stdout', '-O', 'truecolor', '-s', 'lucretia', '-S', 'sh'
+                        '--stdout', '-O', 'truecolor', '-s', 'moria', '-S', 'sh'
                     ]
                 ).run_fg()
             except CommandNotFound:
@@ -186,8 +186,9 @@ class EssexPrint(ColorApp):
                     title_cat.run_fg()
         print('\n')
 
-    def main(self, svc_name, *extra_svc_names):
-        for svc in self.parent.svc_map((svc_name, *extra_svc_names)):
+    def main(self, *svc_names):
+        errors = False
+        for svc in self.parent.svc_map(svc_names or self.parent.svcs):
             found = False
             for file in ('run', 'finish', 'crash'):
                 # if (runfile := svc / file).is_file():
@@ -202,11 +203,14 @@ class EssexPrint(ColorApp):
                 found = True
             if not found:
                 warn(f"{svc} doesn't exist")
+                errors = True
+        if errors:
+            fail(1)
 
 
 @Essex.subcommand('cat')
 class EssexCat(EssexPrint):
-    """View services' run, finish, and log commands; Alias for print"""
+    """View (all or specified) services' run, finish, and log commands; Alias for print"""
 
 
 @Essex.subcommand('start')
@@ -279,6 +283,29 @@ class EssexStatus(ColorApp):
             else:
                 warn(f"{svc} doesn't exist")
                 errors = True
+        if errors:
+            fail(1)
+
+
+@Essex.subcommand('pid')
+class EssexPid(ColorApp):
+    """Print the PIDs of running services"""
+
+    def main(self, svc_name, *extra_svc_names):
+        self.parent.fail_if_unsupervised()
+        errors = False
+        for svc in self.parent.svc_map((svc_name, *extra_svc_names)):
+            try:
+                pid = s6_svstat('-p', svc).strip()
+            except ProcessExecutionError as e:
+                warn(f"{e}")
+                errors = True
+            else:
+                if pid == '-1':
+                    warn(f"{svc} is not running")
+                    errors = True
+                else:
+                    print(pid)
         if errors:
             fail(1)
 
@@ -406,8 +433,8 @@ class EssexSync(Stopper, Starter):
                 self.start(svc, announce=True)
 
 
-@Essex.subcommand('reload')
-class EssexReload(Stopper, Starter):
+@Essex.subcommand('upgrade')
+class EssexUpgrade(Stopper, Starter):
     """Restart (all or specified) running services whose run scripts have changed; Depends on the runfile generating an adjacent run.md5 file, like essex-generated runfiles do"""
 
     def main(self, *svc_names):
@@ -423,6 +450,11 @@ class EssexReload(Stopper, Starter):
                             self.stop(svc, announce=True)
                             self.start(svc, announce=True)
                             break
+
+
+@Essex.subcommand('reload')
+class EssexReload(EssexUpgrade):
+    """Restart (all or specified) running services whose run scripts have changed; Depends on the runfile generating an adjacent run.md5 file, like essex-generated runfiles do; Alias for upgrade; Deprecated"""
 
 
 @Essex.subcommand('pt')
@@ -668,8 +700,8 @@ class EssexNew(ColorApp):
 def main():
     for app in (
         EssexCat, EssexDisable, EssexEnable, EssexList, EssexLog, EssexNew,
-        EssexOff, EssexOn, EssexPrint, EssexSignal, EssexStart, EssexStatus,
-        EssexStop, EssexSync, EssexTree
+        EssexOff, EssexOn, EssexPid, EssexPrint, EssexReload, EssexSignal,
+        EssexStart, EssexStatus, EssexStop, EssexSync, EssexTree, EssexUpgrade
     ):
         app.unbind_switches('help-all', 'v', 'version')
     Essex()

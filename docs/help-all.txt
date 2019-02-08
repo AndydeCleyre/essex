@@ -1,0 +1,314 @@
+essex 1.2.0
+
+Simply manage services
+
+Usage:
+    essex [SWITCHES] [SUBCOMMAND [SWITCHES]] 
+
+Meta-switches:
+    -h, --help                                            Prints this help message and quits
+    --help-all                                            Prints help messages of all sub-commands and quits
+    -v, --version                                         Prints the program's version and quits
+
+Switches:
+    -d, --directory SERVICES_DIRECTORY:str                folder of services to manage; the default is the first existing match from ('./svcs', '~/svcs',
+                                                          '/var/svcs', '/svcs'), unless a colon-delimited SERVICES_PATHS env var exists;
+    -l, --logs-directory SERVICES_LOGS_DIRECTORY:str      folder of services' log files; the default is SERVICES_DIRECTORY/../svcs-logs
+
+Sub-commands:
+    cat                                                   View (all or specified) services' run, finish, and log commands; Alias for print
+    disable                                               Configure individual services to be down, without actually stopping them
+    enable                                                Configure individual services to be up, without actually starting them
+    list                                                  List all known services
+    log                                                   View a service's log
+    new                                                   Create a new service
+    off                                                   Stop all services and their supervision
+    on                                                    Start supervising all services
+    pid                                                   Print the PIDs of running services
+    print                                                 View (all or specified) services' run, finish, and log commands
+    pt                                                    Print a sample Papertrail log_files.yml
+    reload                                                Restart (all or specified) running services whose run scripts have changed; Depends on the runfile
+                                                          generating an adjacent run.md5 file, like essex-generated runfiles do; Alias for upgrade; Deprecated
+    sig                                                   Send a signal to a service
+    start                                                 Start individual services
+    status                                                View the current states of (all or specified) services
+    stop                                                  Stop individual services
+    sync                                                  Start or stop services to match their configuration
+    tree                                                  View the process tree from the supervision root
+    upgrade                                               Restart (all or specified) running services whose run scripts have changed; Depends on the runfile
+                                                          generating an adjacent run.md5 file, like essex-generated runfiles do
+
+essex cat 1.2.0
+
+View (all or specified) services' run, finish, and log commands; Alias for print
+
+Usage:
+    essex cat [SWITCHES] svc_names...
+
+Hidden-switches:
+    -h, --help          Prints this help message and quits
+
+Switches:
+    -n, --no-color      do not colorize the output (for piping)
+
+
+essex disable 1.2.0
+
+Configure individual services to be down, without actually stopping them
+
+Usage:
+    essex disable [SWITCHES] svc_name extra_svc_names...
+
+Hidden-switches:
+    -h, --help      Prints this help message and quits
+
+
+essex enable 1.2.0
+
+Configure individual services to be up, without actually starting them
+
+Usage:
+    essex enable [SWITCHES] svc_name extra_svc_names...
+
+Hidden-switches:
+    -h, --help      Prints this help message and quits
+
+
+essex list 1.2.0
+
+List all known services
+
+Usage:
+    essex list [SWITCHES] 
+
+Hidden-switches:
+    -h, --help         Prints this help message and quits
+
+Switches:
+    -e, --enabled      only list enabled services (configured to be running)
+
+
+essex log 1.2.0
+
+View a service's log
+
+Usage:
+    essex log [SWITCHES] [svc_name=.s6-svscan] extra_svc_names...
+
+Hidden-switches:
+    -h, --help                 Prints this help message and quits
+
+Switches:
+    -a, --all                  view logs from all services
+    -f, --follow               continue printing new lines as they are added to the log file
+    -n, --lines LINES:str      print only the last LINES lines from the service's current log file, or prepend a '+' to start at line LINES; the default is +1
+
+
+essex new 1.2.0
+
+Create a new service
+
+Usage:
+    essex new [SWITCHES] svc_name cmd
+
+Hidden-switches:
+    -h, --help                                   Prints this help message and quits
+
+Switches:
+    -d, --working-dir WORKING_DIRECTORY:str      run the process from inside this folder; the default is SERVICES_DIRECTORY/svc_name
+    -e, --enable                                 enable the new service after creation
+    -f, --finish FINISH_CMD:str                  command to run whenever the supervised process dies (must complete in under 5 seconds)
+    -o, --on-rotate PROCESSOR_CMD:str            processor command to run when rotating logs; receives log via stdin; its stdout is archived; PROCESSOR_CMD
+                                                 will be double-quoted
+    -p, --prune-at MEBIBYTES:[0..1024]           keep up to MEBIBYTES mebibytes of logs before deleting the oldest; 0 means never prune; the default is 40
+    -r, --rotate-at MEBIBYTES:[1..256]           archive each log file when it reaches MEBIBYTES mebibytes; the default is 4
+    -u, --as-user USERNAME:str                   non-root user to run the new service as (only works for root)
+
+
+essex off 1.2.0
+
+Stop all services and their supervision
+
+Usage:
+    essex off [SWITCHES] 
+
+Hidden-switches:
+    -h, --help                          Prints this help message and quits
+
+Switches:
+    -f, --fail-after SECONDS:float      exit with code 1 if a service hasn't died after SECONDS seconds; if 0, will not move on until the process dies;
+                                        excludes --kill-after
+    -k, --kill-after SECONDS:float      send a kill signal (9) if a service hasn't died after SECONDS seconds; if 0, will not move on until the process dies;
+                                        excludes --fail-after
+
+
+essex on 1.2.0
+
+Start supervising all services
+
+Usage:
+    essex on [SWITCHES] 
+
+Hidden-switches:
+    -h, --help      Prints this help message and quits
+
+
+essex pid 1.2.0
+
+Print the PIDs of running services
+
+Usage:
+    essex pid [SWITCHES] svc_name extra_svc_names...
+
+Hidden-switches:
+    -h, --help      Prints this help message and quits
+
+
+essex print 1.2.0
+
+View (all or specified) services' run, finish, and log commands
+
+Usage:
+    essex print [SWITCHES] svc_names...
+
+Hidden-switches:
+    -h, --help          Prints this help message and quits
+
+Switches:
+    -n, --no-color      do not colorize the output (for piping)
+
+
+essex pt 1.2.0
+
+Print a sample Papertrail log_files.yml
+
+Usage:
+    essex pt [SWITCHES] [host={{ PAPERTRAIL_HOST }}] [port={{ PAPERTRAIL_PORT }}]
+
+Hidden-switches:
+    -h, --help             Prints this help message and quits
+    --help-all             Prints help messages of all sub-commands and quits
+    -v, --version          Prints the program's version and quits
+
+Switches:
+    -i, --interactive      interactively ask the user for host and port
+
+
+essex reload 1.2.0
+
+Restart (all or specified) running services whose run scripts have changed; Depends on the runfile generating an adjacent run.md5 file, like essex-generated runfiles do; Alias for upgrade; Deprecated
+
+Usage:
+    essex reload [SWITCHES] svc_names...
+
+Hidden-switches:
+    -h, --help                          Prints this help message and quits
+
+Switches:
+    -f, --fail-after SECONDS:float      exit with code 1 if a service hasn't died after SECONDS seconds; if 0, will not move on until the process dies;
+                                        excludes --kill-after
+    -k, --kill-after SECONDS:float      send a kill signal (9) if a service hasn't died after SECONDS seconds; if 0, will not move on until the process dies;
+                                        excludes --fail-after
+
+
+essex sig 1.2.0
+
+Send a signal to a service
+
+Usage:
+    essex sig [SWITCHES] signal svc_name extra_svc_names...
+
+Hidden-switches:
+    -h, --help      Prints this help message and quits
+
+
+essex start 1.2.0
+
+Start individual services
+
+Usage:
+    essex start [SWITCHES] svc_name extra_svc_names...
+
+Hidden-switches:
+    -h, --help      Prints this help message and quits
+
+
+essex status 1.2.0
+
+View the current states of (all or specified) services
+
+Usage:
+    essex status [SWITCHES] svc_names...
+
+Hidden-switches:
+    -h, --help         Prints this help message and quits
+
+Switches:
+    -e, --enabled      only list enabled services (configured to be running)
+
+
+essex stop 1.2.0
+
+Stop individual services
+
+Usage:
+    essex stop [SWITCHES] svc_name extra_svc_names...
+
+Hidden-switches:
+    -h, --help                          Prints this help message and quits
+
+Switches:
+    -f, --fail-after SECONDS:float      exit with code 1 if a service hasn't died after SECONDS seconds; if 0, will not move on until the process dies;
+                                        excludes --kill-after
+    -k, --kill-after SECONDS:float      send a kill signal (9) if a service hasn't died after SECONDS seconds; if 0, will not move on until the process dies;
+                                        excludes --fail-after
+
+
+essex sync 1.2.0
+
+Start or stop services to match their configuration
+
+Usage:
+    essex sync [SWITCHES] svc_names...
+
+Hidden-switches:
+    -h, --help                          Prints this help message and quits
+
+Switches:
+    -f, --fail-after SECONDS:float      exit with code 1 if a service hasn't died after SECONDS seconds; if 0, will not move on until the process dies;
+                                        excludes --kill-after
+    -k, --kill-after SECONDS:float      send a kill signal (9) if a service hasn't died after SECONDS seconds; if 0, will not move on until the process dies;
+                                        excludes --fail-after
+
+
+essex tree 1.2.0
+
+View the process tree from the supervision root
+
+Usage:
+    essex tree [SWITCHES] 
+
+Hidden-switches:
+    -h, --help       Prints this help message and quits
+
+Switches:
+    -q, --quiet      don't print childless supervisors, s6-log processes, or s6-log supervisors; has no effect when pstree is provided by busybox
+
+
+essex upgrade 1.2.0
+
+Restart (all or specified) running services whose run scripts have changed; Depends on the runfile generating an adjacent run.md5 file, like essex-generated runfiles do
+
+Usage:
+    essex upgrade [SWITCHES] svc_names...
+
+Hidden-switches:
+    -h, --help                          Prints this help message and quits
+
+Switches:
+    -f, --fail-after SECONDS:float      exit with code 1 if a service hasn't died after SECONDS seconds; if 0, will not move on until the process dies;
+                                        excludes --kill-after
+    -k, --kill-after SECONDS:float      send a kill signal (9) if a service hasn't died after SECONDS seconds; if 0, will not move on until the process dies;
+                                        excludes --fail-after
+
+
