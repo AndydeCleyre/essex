@@ -433,8 +433,8 @@ class EssexSync(Stopper, Starter):
                 self.start(svc, announce=True)
 
 
-@Essex.subcommand('reload')
-class EssexReload(Stopper, Starter):
+@Essex.subcommand('upgrade')
+class EssexUpgrade(Stopper, Starter):
     """Restart (all or specified) running services whose run scripts have changed; Depends on the runfile generating an adjacent run.md5 file, like essex-generated runfiles do"""
 
     def main(self, *svc_names):
@@ -450,6 +450,11 @@ class EssexReload(Stopper, Starter):
                             self.stop(svc, announce=True)
                             self.start(svc, announce=True)
                             break
+
+
+@Essex.subcommand('reload')
+class EssexReload(EssexUpgrade):
+    """Restart (all or specified) running services whose run scripts have changed; Depends on the runfile generating an adjacent run.md5 file, like essex-generated runfiles do; Alias for upgrade; Deprecated"""
 
 
 @Essex.subcommand('pt')
@@ -696,7 +701,7 @@ def main():
     for app in (
         EssexCat, EssexDisable, EssexEnable, EssexList, EssexLog, EssexNew,
         EssexOff, EssexOn, EssexPid, EssexPrint, EssexReload, EssexSignal,
-        EssexStart, EssexStatus, EssexStop, EssexSync, EssexTree
+        EssexStart, EssexStatus, EssexStop, EssexSync, EssexTree, EssexUpgrade
     ):
         app.unbind_switches('help-all', 'v', 'version')
     Essex()

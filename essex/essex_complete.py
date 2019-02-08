@@ -10,16 +10,17 @@ from plumbum import local
 
 subcommands = (
     'cat', 'disable', 'enable', 'list', 'log', 'new', 'off', 'on', 'pid',
-    'print', 'reload', 'sig', 'start', 'status', 'stop', 'sync', 'tree'
+    'print', 'reload', 'sig', 'start', 'status', 'stop', 'sync', 'tree', 'upgrade'
 )
 signals = (
     'alrm', 'abrt', 'quit', 'hup', 'kill', 'term', 'int',
     'usr1', 'usr2', 'stop', 'cont', 'winch'
 )
 
+# Declare switches, which take arguments
+stop_cmds = ('off', 'reload', 'stop', 'sync', 'upgrade')
 opts = defaultdict(tuple, {
-    sc: ('-f', '--fail-after', '-k', '--kill-after')
-    for sc in ('off', 'reload', 'stop', 'sync')
+    sc: ('-f', '--fail-after', '-k', '--kill-after') for sc in stop_cmds
 })
 opts.update({
     'essex': ('-d', '--directory', '-l', '--logs-directory'),
