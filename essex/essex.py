@@ -164,11 +164,6 @@ class EssexPrint(ColorApp):
         help="do not colorize the output (for piping)"
     )
 
-    run_only = Flag(
-        ['r', 'run-only'],
-        help="only print each service's runfile, ignoring any finish, crash, or logger scripts"
-    )
-
     def display(self, docpath):
         title_cat = tail['-vn', '+1', docpath]
         if self.no_color:
@@ -195,15 +190,15 @@ class EssexPrint(ColorApp):
         errors = False
         for svc in self.parent.svc_map(svc_names or self.parent.svcs):
             found = False
-            for file in ('run',) if self.run_only else ('run', 'finish', 'crash'):
+            for file in ('run', 'finish', 'crash'):
                 # if (runfile := svc / file).is_file():
                 runfile = svc / file  #
                 if runfile.is_file():  #
                     self.display(runfile)
                     found = True
-            # if not self.run_only and (logger := svc / 'log' / 'run').is_file():
+            # if (logger := svc / 'log' / 'run').is_file():
             logger = svc / 'log' / 'run'  #
-            if not self.run_only and logger.is_file():  #
+            if logger.is_file():  #
                 self.display(logger)
                 found = True
             if not found:
