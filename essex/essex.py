@@ -231,10 +231,10 @@ class EssexStart(Starter):
 
 @Essex.subcommand('stop')
 class EssexStop(Stopper):
-    """Stop individual services"""
+    """Stop (all or specified) services"""
 
-    def main(self, svc_name, *extra_svc_names):
-        for svc in self.parent.svc_map((svc_name, *extra_svc_names)):
+    def main(self, *svc_names):
+        for svc in self.parent.svc_map(svc_names or self.parent.svcs):
             self.stop(svc, announce=True)
 
 
