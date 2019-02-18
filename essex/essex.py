@@ -169,6 +169,11 @@ class EssexPrint(ColorApp):
         help="only print each service's runfile, ignoring any finish, crash, or logger scripts"
     )
 
+    enabled_only = Flag(
+        ['e', 'enabled'],
+        help="only print contents of enabled services (configured to be running)"
+    )
+
     def display(self, docpath):
         title_cat = tail['-vn', '+1', docpath]
         if self.no_color:
@@ -194,6 +199,8 @@ class EssexPrint(ColorApp):
     def main(self, *svc_names):
         errors = False
         for svc in self.parent.svc_map(svc_names or self.parent.svcs):
+            if self.enabled_only and 'down' in svc:
+                continue
             found = False
             for file in ('run',) if self.run_only else ('run', 'finish', 'crash'):
                 # if (runfile := svc / file).is_file():

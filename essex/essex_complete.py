@@ -34,11 +34,11 @@ opts.update({
 # Declare flags, which take no arguments. All svcs have -h, --help
 hlp = ('-h', '--help')
 flags = defaultdict(lambda: hlp)
-flags['cat'] += ('-n', '--no-color', '-r', '--run-only')
+flags['cat'] += ('-n', '--no-color', '-r', '--run-only', '-e', '--enabled')
 flags['log'] += ('-f', '--follow', '-a', '--all')
 flags['new'] += ('-e', '--enable')
 flags['list'] += ('-e', '--enabled')
-flags['print'] += ('-n', '--no-color', '-r', '--run-only')
+flags['print'] += ('-n', '--no-color', '-r', '--run-only', '-e', '--enabled')
 flags['status'] += ('-e', '--enabled')
 flags['tree'] += ('-q', '--quiet')
 
