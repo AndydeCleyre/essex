@@ -57,6 +57,7 @@ class Essex(ColorApp):
 
     logs_dir = SwitchAttr(
         ['l', 'logs-directory'],
+        local.path,
         argname='SERVICES_LOGS_DIRECTORY',
         help=(
             "folder of services' log files; "
