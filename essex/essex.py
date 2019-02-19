@@ -47,6 +47,7 @@ class Essex(ColorApp):
 
     svcs_dir = SwitchAttr(
         ['d', 'directory'],
+        local.path,
         argname='SERVICES_DIRECTORY',
         help=(
             "folder of services to manage; "
@@ -66,9 +67,7 @@ class Essex(ColorApp):
     )
 
     def main(self):
-        if self.svcs_dir:
-            self.svcs_dir = local.path(self.svcs_dir)
-        else:
+        if not self.svcs_dir:
             try:
                 svcs_paths = local.env['SERVICES_PATHS'].split(':')
             except KeyError:
