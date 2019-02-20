@@ -369,11 +369,11 @@ class EssexTree(ColorApp):
 
 @Essex.subcommand('enable')
 class EssexEnable(ColorApp):
-    """Configure individual services to be up, without actually starting them"""
+    """Configure (all or specified) services to be up, without actually starting them"""
 
-    def main(self, svc_name, *extra_svc_names):
+    def main(self, *svc_names):
         errors = False
-        for svc in self.parent.svc_map((svc_name, *extra_svc_names)):
+        for svc in self.parent.svc_map(svc_names or self.parent.svcs):
             if svc.is_dir():
                 (svc / 'down').delete()
             else:
@@ -385,11 +385,11 @@ class EssexEnable(ColorApp):
 
 @Essex.subcommand('disable')
 class EssexDisable(ColorApp):
-    """Configure individual services to be down, without actually stopping them"""
+    """Configure (all or specified) services to be down, without actually stopping them"""
 
-    def main(self, svc_name, *extra_svc_names):
+    def main(self, *svc_names):
         errors = False
-        for svc in self.parent.svc_map((svc_name, *extra_svc_names)):
+        for svc in self.parent.svc_map(svc_names or self.parent.svcs):
             if svc.is_dir():
                 (svc / 'down').touch()
             else:
