@@ -18,7 +18,7 @@
 # To use overlay storage driver as regular user,
 # install fuse-overlayfs
 
-version=1.2.0
+version=2.0.0
 rm -rf essex/dist/*
 ctnr=`buildah from docker://inn0kenty/pyinstaller-alpine:3.7`
 buildah run -v "$PWD/essex:/src" $ctnr -- /pyinstaller/pyinstaller.sh -F essex.py
