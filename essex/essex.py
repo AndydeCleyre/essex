@@ -239,12 +239,12 @@ class EssexCat(EssexPrint):
 
 @Essex.subcommand('start')
 class EssexStart(Starter):
-    """Start individual services"""
+    """Start (all or specified) services"""
 
-    def main(self, svc_name, *extra_svc_names):
+    def main(self, *svc_names):
         self.parent.fail_if_unsupervised()
         s6_svscanctl('-a', self.parent.svcs_dir)
-        for svc in self.parent.svc_map((svc_name, *extra_svc_names)):
+        for svc in self.parent.svc_map(svc_names or self.parent.svcs):
             self.start(svc)
 
 
@@ -549,7 +549,7 @@ class EssexLog(ColorApp):
 
 @Essex.subcommand('sig')
 class EssexSignal(ColorApp):
-    """Send a signal to a service"""
+    """Send a signal to (all or specified) services"""
 
     sigs = {
         'alrm': 'a', 'abrt': 'b', 'quit': 'q',
@@ -558,10 +558,10 @@ class EssexSignal(ColorApp):
         'stop': 'p', 'cont': 'c', 'winch': 'y'
     }
 
-    def main(self, signal: Set(*sigs), svc_name, *extra_svc_names):
+    def main(self, signal: Set(*sigs), *svc_names):
         self.parent.fail_if_unsupervised()
         sig = self.sigs[signal.lower()]
-        for svc in self.parent.svc_map((svc_name, *extra_svc_names)):
+        for svc in self.parent.svc_map(svc_names or self.parent.svcs):
             s6_svc[f'-{sig}', svc].run_fg()
 
 
