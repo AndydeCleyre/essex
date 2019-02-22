@@ -92,6 +92,18 @@ class Essex(ColorApp):
     def svc_map(self, svc_names):
         return (self.svcs_dir / sn for sn in svc_names)
 
+    @property
+    def root_pid(self):
+        try:
+            readlink(lsof)
+        except:  # real lsof
+            return lsof('-t', self.svcs_dir / '.s6-svscan' / 'control').splitlines()[0]
+        else:  # busybox lsof
+            return next(filter(
+                lambda p: p.endswith('/.s6-svscan/control'),
+                lsof(self.svcs_dir / '.s6-svscan' / 'control').splitlines()
+            )).split()[0]
+
 
 class Stopper(ColorApp):
 
@@ -337,20 +349,9 @@ class EssexTree(ColorApp):
     def main(self):
         self.parent.fail_if_unsupervised()
         try:
-            readlink(lsof)
-        except:  # real lsof
-            root = lsof('-t', self.parent.svcs_dir / '.s6-svscan' / 'control').splitlines()[0]
-        else:  # busybox lsof
-            root = next(filter(
-                lambda p: p.endswith('/.s6-svscan/control'),
-                lsof(
-                    self.parent.svcs_dir / '.s6-svscan' / 'control'
-                ).splitlines()
-            )).split()[0]
-        try:
             readlink(pstree)
         except:  # real pstree
-            tree = pstree['-apT', root]()
+            tree = pstree['-apT', self.parent.root_pid]()
             if self.quiet:
                 tl = tree.splitlines()
                 whitelist = set(range(len(tl)))
@@ -363,7 +364,7 @@ class EssexTree(ColorApp):
                         whitelist.discard(i - 1)
                 tree = '\n'.join(tl[i] for i in sorted(whitelist))
         else:  # busybox pstree
-            tree = pstree['-p', root]()
+            tree = pstree['-p', self.parent.root_pid]()
         print(tree)
 
 
