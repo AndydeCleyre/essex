@@ -35,7 +35,7 @@ opts.update({
 hlp = ('-h', '--help')
 flags = defaultdict(lambda: hlp)
 flags['cat'] += ('-n', '--no-color', '-r', '--run-only', '-e', '--enabled')
-flags['log'] += ('-f', '--follow', '-a', '--all')
+flags['log'] += ('-f', '--follow', '-d', '--debug')
 flags['new'] += ('-e', '--enable')
 flags['list'] += ('-e', '--enabled')
 flags['print'] += ('-n', '--no-color', '-r', '--run-only', '-e', '--enabled')

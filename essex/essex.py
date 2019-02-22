@@ -499,7 +499,7 @@ class EssexPapertrail(ColorApp):
 
 @Essex.subcommand('log')
 class EssexLog(ColorApp):
-    """View a service's log"""
+    """View (all or specified) services' current log files"""
 
     lines = SwitchAttr(
         ['n', 'lines'],
@@ -516,19 +516,18 @@ class EssexLog(ColorApp):
         help="continue printing new lines as they are added to the log file"
     )
 
-    all_logs = Flag(['a', 'all'], help="view logs from all services")
+    debug = Flag(
+        ['d', 'debug'],
+        help="view the s6-svscan log file"
+    )
 
-    def main(self, svc_name='.s6-svscan', *extra_svc_names):
-        if self.all_logs:
-            logs = [
-                self.parent.logs_dir / svc.name / 'current'
-                for svc in self.parent.svcs + (self.parent.svcs_dir / '.s6-svscan',)
-            ]
-        else:
-            logs = [
-                self.parent.logs_dir / sn / 'current'
-                for sn in (svc_name, *extra_svc_names)
-            ]
+    def main(self, *svc_names):
+        logs = [
+            self.parent.logs_dir / svc.name / 'current'
+            for svc in self.parent.svc_map(svc_names or self.parent.svcs)
+        ]
+        if self.debug:
+            logs.append(self.parent.logs_dir / '.s6-svscan' / 'current')
         if self.follow:
             with suppress(KeyboardInterrupt):
                 try:
