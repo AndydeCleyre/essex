@@ -35,7 +35,7 @@ From 64-bit musl binary release:
 
 .. code-block:: sh
 
-    wget "https://github.com/AndydeCleyre/essex/releases/download/1.2.0/essex-1.2.0-x86_64.tar.xz" -O - | tar xJf - -C /usr/local/bin essex _essex
+    wget "https://github.com/AndydeCleyre/essex/releases/download/2.0.0/essex-2.0.0-x86_64.tar.xz" -O - | tar xJf - -C /usr/local/bin essex _essex
     complete -o dirnames -C _essex essex  # bash completion
 
 Usage
@@ -43,7 +43,7 @@ Usage
 
 ::
 
-    essex 1.2.0
+    essex 2.0.0
 
     Simply manage services
 
@@ -51,37 +51,37 @@ Usage
         essex [SWITCHES] [SUBCOMMAND [SWITCHES]]
 
     Meta-switches:
-        -h, --help                                            Prints this help message and quits
-        --help-all                                            Prints help messages of all sub-commands and quits
-        -v, --version                                         Prints the program's version and quits
+        -h, --help                                             Prints this help message and quits
+        --help-all                                             Prints help messages of all sub-commands and quits
+        -v, --version                                          Prints the program's version and quits
 
     Switches:
-        -d, --directory SERVICES_DIRECTORY:str                folder of services to manage; the default is the first existing match from ('./svcs', '~/svcs',
-                                                              '/var/svcs', '/svcs'), unless a colon-delimited SERVICES_PATHS env var exists;
-        -l, --logs-directory SERVICES_LOGS_DIRECTORY:str      folder of services' log files; the default is SERVICES_DIRECTORY/../svcs-logs
+        -d, --directory SERVICES_DIRECTORY:path                folder of services to manage; the default is the first existing match from ('./svcs', '~/svcs',
+                                                               '/var/svcs', '/svcs'), unless a colon-delimited SERVICES_PATHS env var exists;
+        -l, --logs-directory SERVICES_LOGS_DIRECTORY:path      folder of services' log files; the default is SERVICES_DIRECTORY/../svcs-logs
 
     Sub-commands:
-        cat                                                   View (all or specified) services' run, finish, and log commands; Alias for print
-        disable                                               Configure individual services to be down, without actually stopping them
-        enable                                                Configure individual services to be up, without actually starting them
-        list                                                  List all known services
-        log                                                   View a service's log
-        new                                                   Create a new service
-        off                                                   Stop all services and their supervision
-        on                                                    Start supervising all services
-        pid                                                   Print the PIDs of running services
-        print                                                 View (all or specified) services' run, finish, and log commands
-        pt                                                    Print a sample Papertrail log_files.yml
-        reload                                                Restart (all or specified) running services whose run scripts have changed; Depends on the runfile
-                                                              generating an adjacent run.md5 file, like essex-generated runfiles do; Alias for upgrade; Deprecated
-        sig                                                   Send a signal to a service
-        start                                                 Start individual services
-        status                                                View the current states of (all or specified) services
-        stop                                                  Stop individual services
-        sync                                                  Start or stop services to match their configuration
-        tree                                                  View the process tree from the supervision root
-        upgrade                                               Restart (all or specified) running services whose run scripts have changed; Depends on the runfile
-                                                              generating an adjacent run.md5 file, like essex-generated runfiles do
+        cat                                                    View (all or specified) services' run, finish, and log commands; Alias for print
+        disable                                                Configure (all or specified) services to be down, without actually stopping them
+        enable                                                 Configure (all or specified) services to be up, without actually starting them
+        list                                                   List all known services
+        log                                                    View (all or specified) services' current log files
+        new                                                    Create a new service
+        off                                                    Stop all services and their supervision
+        on                                                     Start supervising all services
+        pid                                                    Print the PIDs of running services, or s6-svscan (supervision root) if none specified
+        print                                                  View (all or specified) services' run, finish, and log commands
+        pt                                                     Print a sample Papertrail log_files.yml
+        reload                                                 Restart (all or specified) running services whose run scripts have changed; Depends on the runfile
+                                                               generating an adjacent run.md5 file, like essex-generated runfiles do; Alias for upgrade; Deprecated
+        sig                                                    Send a signal to (all or specified) services
+        start                                                  Start (all or specified) services
+        status                                                 View the current states of (all or specified) services
+        stop                                                   Stop (all or specified) services
+        sync                                                   Start or stop services to match their configuration
+        tree                                                   View the process tree from the supervision root
+        upgrade                                                Restart (all or specified) running services whose run scripts have changed; Depends on the runfile
+                                                               generating an adjacent run.md5 file, like essex-generated runfiles do
 
 Packaging
 ---------

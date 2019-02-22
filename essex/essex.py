@@ -29,7 +29,7 @@ def fail(r, out='', err=''):
 
 class ColorApp(Application):
     PROGNAME = green
-    VERSION = '1.2.0' | blue
+    VERSION = '2.0.0' | blue
     COLOR_USAGE = green
     COLOR_GROUPS = {
         'Meta-switches': magenta,
