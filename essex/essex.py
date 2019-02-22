@@ -313,25 +313,28 @@ class EssexStatus(ColorApp):
 
 @Essex.subcommand('pid')
 class EssexPid(ColorApp):
-    """Print the PIDs of running services"""
+    """Print the PIDs of running services, or s6-svscan (supervision root) if none specified"""
 
-    def main(self, svc_name, *extra_svc_names):
+    def main(self, *svc_names):
         self.parent.fail_if_unsupervised()
-        errors = False
-        for svc in self.parent.svc_map((svc_name, *extra_svc_names)):
-            try:
-                pid = s6_svstat('-p', svc).strip()
-            except ProcessExecutionError as e:
-                warn(f"{e}")
-                errors = True
-            else:
-                if pid == '-1':
-                    warn(f"{svc} is not running")
+        if not svc_names:
+            print(self.parent.root_pid)
+        else:
+            errors = False
+            for svc in self.parent.svc_map(svc_names):
+                try:
+                    pid = s6_svstat('-p', svc).strip()
+                except ProcessExecutionError as e:
+                    warn(f"{e}")
                     errors = True
                 else:
-                    print(pid)
-        if errors:
-            fail(1)
+                    if pid == '-1':
+                        warn(f"{svc} is not running")
+                        errors = True
+                    else:
+                        print(pid)
+            if errors:
+                fail(1)
 
 
 @Essex.subcommand('tree')
