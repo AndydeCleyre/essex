@@ -27,18 +27,18 @@ opts.update({
     'log': ('-n', '--lines'),
     'new': (
         '-d', '--working-dir', '-f', '--finish', '-o', '--on-rotate',
-        '-p', '--prune-at', '-r', '--rotate-at', '-u', '--as-user'
+        '-p', '--prune-at', '-r', '--rotate-at', '-u', '--as-user', '-s', '--store'
     )
 })
 
 # Declare flags, which take no arguments. All svcs have -h, --help
 hlp = ('-h', '--help')
 flags = defaultdict(lambda: hlp)
-flags['cat'] += ('-n', '--no-color')
-flags['log'] += ('-f', '--follow', '-a', '--all')
+flags['cat'] += ('-n', '--no-color', '-r', '--run-only', '-e', '--enabled')
+flags['log'] += ('-f', '--follow', '-d', '--debug')
 flags['new'] += ('-e', '--enable')
 flags['list'] += ('-e', '--enabled')
-flags['print'] += ('-n', '--no-color')
+flags['print'] += ('-n', '--no-color', '-r', '--run-only', '-e', '--enabled')
 flags['status'] += ('-e', '--enabled')
 flags['tree'] += ('-q', '--quiet')
 

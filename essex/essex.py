@@ -29,7 +29,7 @@ def fail(r, out='', err=''):
 
 class ColorApp(Application):
     PROGNAME = green
-    VERSION = '1.2.0' | blue
+    VERSION = '2.0.0' | blue
     COLOR_USAGE = green
     COLOR_GROUPS = {
         'Meta-switches': magenta,
@@ -47,6 +47,7 @@ class Essex(ColorApp):
 
     svcs_dir = SwitchAttr(
         ['d', 'directory'],
+        local.path,
         argname='SERVICES_DIRECTORY',
         help=(
             "folder of services to manage; "
@@ -57,6 +58,7 @@ class Essex(ColorApp):
 
     logs_dir = SwitchAttr(
         ['l', 'logs-directory'],
+        local.path,
         argname='SERVICES_LOGS_DIRECTORY',
         help=(
             "folder of services' log files; "
@@ -65,9 +67,7 @@ class Essex(ColorApp):
     )
 
     def main(self):
-        if self.svcs_dir:
-            self.svcs_dir = local.path(self.svcs_dir)
-        else:
+        if not self.svcs_dir:
             try:
                 svcs_paths = local.env['SERVICES_PATHS'].split(':')
             except KeyError:
@@ -91,6 +91,18 @@ class Essex(ColorApp):
 
     def svc_map(self, svc_names):
         return (self.svcs_dir / sn for sn in svc_names)
+
+    @property
+    def root_pid(self):
+        try:
+            readlink(lsof)
+        except:  # real lsof
+            return lsof('-t', self.svcs_dir / '.s6-svscan' / 'control').splitlines()[0]
+        else:  # busybox lsof
+            return next(filter(
+                lambda p: p.endswith('/.s6-svscan/control'),
+                lsof(self.svcs_dir / '.s6-svscan' / 'control').splitlines()
+            )).split()[0]
 
 
 class Stopper(ColorApp):
@@ -164,6 +176,16 @@ class EssexPrint(ColorApp):
         help="do not colorize the output (for piping)"
     )
 
+    run_only = Flag(
+        ['r', 'run-only'],
+        help="only print each service's runfile, ignoring any finish, crash, or logger scripts"
+    )
+
+    enabled_only = Flag(
+        ['e', 'enabled'],
+        help="only print contents of enabled services (configured to be running)"
+    )
+
     def display(self, docpath):
         title_cat = tail['-vn', '+1', docpath]
         if self.no_color:
@@ -189,16 +211,18 @@ class EssexPrint(ColorApp):
     def main(self, *svc_names):
         errors = False
         for svc in self.parent.svc_map(svc_names or self.parent.svcs):
+            if self.enabled_only and 'down' in svc:
+                continue
             found = False
-            for file in ('run', 'finish', 'crash'):
+            for file in ('run',) if self.run_only else ('run', 'finish', 'crash'):
                 # if (runfile := svc / file).is_file():
                 runfile = svc / file  #
                 if runfile.is_file():  #
                     self.display(runfile)
                     found = True
-            # if (logger := svc / 'log' / 'run').is_file():
+            # if not self.run_only and (logger := svc / 'log' / 'run').is_file():
             logger = svc / 'log' / 'run'  #
-            if logger.is_file():  #
+            if not self.run_only and logger.is_file():  #
                 self.display(logger)
                 found = True
             if not found:
@@ -215,21 +239,21 @@ class EssexCat(EssexPrint):
 
 @Essex.subcommand('start')
 class EssexStart(Starter):
-    """Start individual services"""
+    """Start (all or specified) services"""
 
-    def main(self, svc_name, *extra_svc_names):
+    def main(self, *svc_names):
         self.parent.fail_if_unsupervised()
         s6_svscanctl('-a', self.parent.svcs_dir)
-        for svc in self.parent.svc_map((svc_name, *extra_svc_names)):
+        for svc in self.parent.svc_map(svc_names or self.parent.svcs):
             self.start(svc)
 
 
 @Essex.subcommand('stop')
 class EssexStop(Stopper):
-    """Stop individual services"""
+    """Stop (all or specified) services"""
 
-    def main(self, svc_name, *extra_svc_names):
-        for svc in self.parent.svc_map((svc_name, *extra_svc_names)):
+    def main(self, *svc_names):
+        for svc in self.parent.svc_map(svc_names or self.parent.svcs):
             self.stop(svc, announce=True)
 
 
@@ -289,25 +313,28 @@ class EssexStatus(ColorApp):
 
 @Essex.subcommand('pid')
 class EssexPid(ColorApp):
-    """Print the PIDs of running services"""
+    """Print the PIDs of running services, or s6-svscan (supervision root) if none specified"""
 
-    def main(self, svc_name, *extra_svc_names):
+    def main(self, *svc_names):
         self.parent.fail_if_unsupervised()
-        errors = False
-        for svc in self.parent.svc_map((svc_name, *extra_svc_names)):
-            try:
-                pid = s6_svstat('-p', svc).strip()
-            except ProcessExecutionError as e:
-                warn(f"{e}")
-                errors = True
-            else:
-                if pid == '-1':
-                    warn(f"{svc} is not running")
+        if not svc_names:
+            print(self.parent.root_pid)
+        else:
+            errors = False
+            for svc in self.parent.svc_map(svc_names):
+                try:
+                    pid = s6_svstat('-p', svc).strip()
+                except ProcessExecutionError as e:
+                    warn(f"{e}")
                     errors = True
                 else:
-                    print(pid)
-        if errors:
-            fail(1)
+                    if pid == '-1':
+                        warn(f"{svc} is not running")
+                        errors = True
+                    else:
+                        print(pid)
+            if errors:
+                fail(1)
 
 
 @Essex.subcommand('tree')
@@ -325,20 +352,9 @@ class EssexTree(ColorApp):
     def main(self):
         self.parent.fail_if_unsupervised()
         try:
-            readlink(lsof)
-        except:  # real lsof
-            root = lsof('-t', self.parent.svcs_dir / '.s6-svscan' / 'control').splitlines()[0]
-        else:  # busybox lsof
-            root = next(filter(
-                lambda p: p.endswith('/.s6-svscan/control'),
-                lsof(
-                    self.parent.svcs_dir / '.s6-svscan' / 'control'
-                ).splitlines()
-            )).split()[0]
-        try:
             readlink(pstree)
         except:  # real pstree
-            tree = pstree['-apT', root]()
+            tree = pstree['-apT', self.parent.root_pid]()
             if self.quiet:
                 tl = tree.splitlines()
                 whitelist = set(range(len(tl)))
@@ -351,17 +367,17 @@ class EssexTree(ColorApp):
                         whitelist.discard(i - 1)
                 tree = '\n'.join(tl[i] for i in sorted(whitelist))
         else:  # busybox pstree
-            tree = pstree['-p', root]()
+            tree = pstree['-p', self.parent.root_pid]()
         print(tree)
 
 
 @Essex.subcommand('enable')
 class EssexEnable(ColorApp):
-    """Configure individual services to be up, without actually starting them"""
+    """Configure (all or specified) services to be up, without actually starting them"""
 
-    def main(self, svc_name, *extra_svc_names):
+    def main(self, *svc_names):
         errors = False
-        for svc in self.parent.svc_map((svc_name, *extra_svc_names)):
+        for svc in self.parent.svc_map(svc_names or self.parent.svcs):
             if svc.is_dir():
                 (svc / 'down').delete()
             else:
@@ -373,11 +389,11 @@ class EssexEnable(ColorApp):
 
 @Essex.subcommand('disable')
 class EssexDisable(ColorApp):
-    """Configure individual services to be down, without actually stopping them"""
+    """Configure (all or specified) services to be down, without actually stopping them"""
 
-    def main(self, svc_name, *extra_svc_names):
+    def main(self, *svc_names):
         errors = False
-        for svc in self.parent.svc_map((svc_name, *extra_svc_names)):
+        for svc in self.parent.svc_map(svc_names or self.parent.svcs):
             if svc.is_dir():
                 (svc / 'down').touch()
             else:
@@ -487,7 +503,7 @@ class EssexPapertrail(ColorApp):
 
 @Essex.subcommand('log')
 class EssexLog(ColorApp):
-    """View a service's log"""
+    """View (all or specified) services' current log files"""
 
     lines = SwitchAttr(
         ['n', 'lines'],
@@ -504,19 +520,18 @@ class EssexLog(ColorApp):
         help="continue printing new lines as they are added to the log file"
     )
 
-    all_logs = Flag(['a', 'all'], help="view logs from all services")
+    debug = Flag(
+        ['d', 'debug'],
+        help="view the s6-svscan log file"
+    )
 
-    def main(self, svc_name='.s6-svscan', *extra_svc_names):
-        if self.all_logs:
-            logs = [
-                self.parent.logs_dir / svc.name / 'current'
-                for svc in self.parent.svcs + (self.parent.svcs_dir / '.s6-svscan',)
-            ]
-        else:
-            logs = [
-                self.parent.logs_dir / sn / 'current'
-                for sn in (svc_name, *extra_svc_names)
-            ]
+    def main(self, *svc_names):
+        logs = [
+            self.parent.logs_dir / svc.name / 'current'
+            for svc in self.parent.svc_map(svc_names or self.parent.svcs)
+        ]
+        if self.debug:
+            logs.append(self.parent.logs_dir / '.s6-svscan' / 'current')
         if self.follow:
             with suppress(KeyboardInterrupt):
                 try:
@@ -534,7 +549,7 @@ class EssexLog(ColorApp):
 
 @Essex.subcommand('sig')
 class EssexSignal(ColorApp):
-    """Send a signal to a service"""
+    """Send a signal to (all or specified) services"""
 
     sigs = {
         'alrm': 'a', 'abrt': 'b', 'quit': 'q',
@@ -543,10 +558,10 @@ class EssexSignal(ColorApp):
         'stop': 'p', 'cont': 'c', 'winch': 'y'
     }
 
-    def main(self, signal: Set(*sigs), svc_name, *extra_svc_names):
+    def main(self, signal: Set(*sigs), *svc_names):
         self.parent.fail_if_unsupervised()
         sig = self.sigs[signal.lower()]
-        for svc in self.parent.svc_map((svc_name, *extra_svc_names)):
+        for svc in self.parent.svc_map(svc_names or self.parent.svcs):
             s6_svc[f'-{sig}', svc].run_fg()
 
 
@@ -564,6 +579,7 @@ class EssexNew(ColorApp):
 
     working_dir = SwitchAttr(
         ['d', 'working-dir'],
+        local.path,
         argname='WORKING_DIRECTORY',
         help=(
             "run the process from inside this folder; "
@@ -578,7 +594,8 @@ class EssexNew(ColorApp):
     )
 
     enabled = Flag(
-        ['e', 'enable'], help="enable the new service after creation"
+        ['e', 'enable'],
+        help="enable the new service after creation"
     )
 
     on_finish = SwitchAttr(
@@ -620,6 +637,13 @@ class EssexNew(ColorApp):
         )
     )
 
+    store = SwitchAttr(
+        ['s', 'store'],
+        argname='VARNAME=CMD',
+        help=("run CMD and store its output in env var VARNAME before main cmd is run"),
+        list=True
+    )
+
     # TODO: use skabus-dyntee for socket-logging? maybe
     def main(self, svc_name, cmd):
         self.svc = self.parent.svcs_dir / svc_name
@@ -652,10 +676,14 @@ class EssexNew(ColorApp):
             f's6-setuidgid {self.as_user}', "Run as this user"
         ) if self.as_user else None
         working_dir = (
-            f'cd {local.path(self.working_dir)}', "Enter working directory"
+            f'cd {self.working_dir}', "Enter working directory"
         ) if self.working_dir else None
+        store_vars = []
+        for store_var in self.store:
+            var, store_cmd = store_var.split('=', 1)
+            store_vars.append((f'backtick -n {var} {{ {store_cmd} }} importas -u {var} {var}', "Store command output"))
         runfile.write(columnize_comments(*filter(None, (
-            shebang, err_to_out, hash_run, set_user, working_dir, cmd
+            shebang, err_to_out, hash_run, set_user, working_dir, *store_vars, cmd
         ))))
         runfile.chmod(0o755)
         if self.on_finish:
