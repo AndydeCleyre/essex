@@ -576,6 +576,7 @@ class EssexNew(ColorApp):
 
     working_dir = SwitchAttr(
         ['d', 'working-dir'],
+        local.path,
         argname='WORKING_DIRECTORY',
         help=(
             "run the process from inside this folder; "
@@ -590,7 +591,8 @@ class EssexNew(ColorApp):
     )
 
     enabled = Flag(
-        ['e', 'enable'], help="enable the new service after creation"
+        ['e', 'enable'],
+        help="enable the new service after creation"
     )
 
     on_finish = SwitchAttr(
@@ -632,6 +634,13 @@ class EssexNew(ColorApp):
         )
     )
 
+    store = SwitchAttr(
+        ['s', 'store'],
+        argname='VARNAME=CMD',
+        help=("run CMD and store its output in env var VARNAME before main cmd is run"),
+        list=True
+    )
+
     # TODO: use skabus-dyntee for socket-logging? maybe
     def main(self, svc_name, cmd):
         self.svc = self.parent.svcs_dir / svc_name
@@ -664,10 +673,14 @@ class EssexNew(ColorApp):
             f's6-setuidgid {self.as_user}', "Run as this user"
         ) if self.as_user else None
         working_dir = (
-            f'cd {local.path(self.working_dir)}', "Enter working directory"
+            f'cd {self.working_dir}', "Enter working directory"
         ) if self.working_dir else None
+        store_vars = []
+        for store_var in self.store:
+            var, store_cmd = store_var.split('=', 1)
+            store_vars.append((f'backtick -n {var} {{ {store_cmd} }} importas -u {var} {var}', "Store command output"))
         runfile.write(columnize_comments(*filter(None, (
-            shebang, err_to_out, hash_run, set_user, working_dir, cmd
+            shebang, err_to_out, hash_run, set_user, working_dir, *store_vars, cmd
         ))))
         runfile.chmod(0o755)
         if self.on_finish:

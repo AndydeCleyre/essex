@@ -27,7 +27,7 @@ opts.update({
     'log': ('-n', '--lines'),
     'new': (
         '-d', '--working-dir', '-f', '--finish', '-o', '--on-rotate',
-        '-p', '--prune-at', '-r', '--rotate-at', '-u', '--as-user'
+        '-p', '--prune-at', '-r', '--rotate-at', '-u', '--as-user', '-s', '--store'
     )
 })
 
