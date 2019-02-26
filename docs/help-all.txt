@@ -1,4 +1,4 @@
-essex 2.0.0
+essex 2.0.1
 
 Simply manage services
 
@@ -38,7 +38,7 @@ Sub-commands:
     upgrade                                                Restart (all or specified) running services whose run scripts have changed; Depends on the runfile
                                                            generating an adjacent run.md5 file, like essex-generated runfiles do
 
-essex cat 2.0.0
+essex cat 2.0.1
 
 View (all or specified) services' run, finish, and log commands; Alias for print
 
@@ -54,7 +54,7 @@ Switches:
     -r, --run-only      only print each service's runfile, ignoring any finish, crash, or logger scripts
 
 
-essex disable 2.0.0
+essex disable 2.0.1
 
 Configure (all or specified) services to be down, without actually stopping them
 
@@ -65,7 +65,7 @@ Hidden-switches:
     -h, --help      Prints this help message and quits
 
 
-essex enable 2.0.0
+essex enable 2.0.1
 
 Configure (all or specified) services to be up, without actually starting them
 
@@ -76,7 +76,7 @@ Hidden-switches:
     -h, --help      Prints this help message and quits
 
 
-essex list 2.0.0
+essex list 2.0.1
 
 List all known services
 
@@ -90,7 +90,7 @@ Switches:
     -e, --enabled      only list enabled services (configured to be running)
 
 
-essex log 2.0.0
+essex log 2.0.1
 
 View (all or specified) services' current log files
 
@@ -106,7 +106,7 @@ Switches:
     -n, --lines LINES:str      print only the last LINES lines from the service's current log file, or prepend a '+' to start at line LINES; the default is +1
 
 
-essex new 2.0.0
+essex new 2.0.1
 
 Create a new service
 
@@ -128,7 +128,7 @@ Switches:
     -u, --as-user USERNAME:str                    non-root user to run the new service as (only works for root)
 
 
-essex off 2.0.0
+essex off 2.0.1
 
 Stop all services and their supervision
 
@@ -145,7 +145,7 @@ Switches:
                                         excludes --fail-after
 
 
-essex on 2.0.0
+essex on 2.0.1
 
 Start supervising all services
 
@@ -156,7 +156,7 @@ Hidden-switches:
     -h, --help      Prints this help message and quits
 
 
-essex pid 2.0.0
+essex pid 2.0.1
 
 Print the PIDs of running services, or s6-svscan (supervision root) if none specified
 
@@ -167,7 +167,7 @@ Hidden-switches:
     -h, --help      Prints this help message and quits
 
 
-essex print 2.0.0
+essex print 2.0.1
 
 View (all or specified) services' run, finish, and log commands
 
@@ -183,7 +183,7 @@ Switches:
     -r, --run-only      only print each service's runfile, ignoring any finish, crash, or logger scripts
 
 
-essex pt 2.0.0
+essex pt 2.0.1
 
 Print a sample Papertrail log_files.yml
 
@@ -199,7 +199,7 @@ Switches:
     -i, --interactive      interactively ask the user for host and port
 
 
-essex reload 2.0.0
+essex reload 2.0.1
 
 Restart (all or specified) running services whose run scripts have changed; Depends on the runfile generating an adjacent run.md5 file, like essex-generated runfiles do; Alias for upgrade; Deprecated
 
@@ -216,7 +216,7 @@ Switches:
                                         excludes --fail-after
 
 
-essex sig 2.0.0
+essex sig 2.0.1
 
 Send a signal to (all or specified) services
 
@@ -227,7 +227,7 @@ Hidden-switches:
     -h, --help      Prints this help message and quits
 
 
-essex start 2.0.0
+essex start 2.0.1
 
 Start (all or specified) services
 
@@ -238,7 +238,7 @@ Hidden-switches:
     -h, --help      Prints this help message and quits
 
 
-essex status 2.0.0
+essex status 2.0.1
 
 View the current states of (all or specified) services
 
@@ -252,7 +252,7 @@ Switches:
     -e, --enabled      only list enabled services (configured to be running)
 
 
-essex stop 2.0.0
+essex stop 2.0.1
 
 Stop (all or specified) services
 
@@ -269,7 +269,7 @@ Switches:
                                         excludes --fail-after
 
 
-essex sync 2.0.0
+essex sync 2.0.1
 
 Start or stop services to match their configuration
 
@@ -286,7 +286,7 @@ Switches:
                                         excludes --fail-after
 
 
-essex tree 2.0.0
+essex tree 2.0.1
 
 View the process tree from the supervision root
 
@@ -300,7 +300,7 @@ Switches:
     -q, --quiet      don't print childless supervisors, s6-log processes, or s6-log supervisors; has no effect when pstree is provided by busybox
 
 
-essex upgrade 2.0.0
+essex upgrade 2.0.1
 
 Restart (all or specified) running services whose run scripts have changed; Depends on the runfile generating an adjacent run.md5 file, like essex-generated runfiles do
 
