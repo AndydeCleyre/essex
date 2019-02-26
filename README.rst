@@ -35,7 +35,7 @@ From 64-bit musl binary release:
 
 .. code-block:: sh
 
-    wget "https://github.com/AndydeCleyre/essex/releases/download/2.0.0/essex-2.0.0-x86_64.tar.xz" -O - | tar xJf - -C /usr/local/bin essex _essex
+    wget "https://github.com/AndydeCleyre/essex/releases/download/2.0.1/essex-2.0.1-x86_64.tar.xz" -O - | tar xJf - -C /usr/local/bin essex _essex
     complete -o dirnames -C _essex essex  # bash completion
 
 Usage
@@ -43,7 +43,7 @@ Usage
 
 ::
 
-    essex 2.0.0
+    essex 2.0.1
 
     Simply manage services
 

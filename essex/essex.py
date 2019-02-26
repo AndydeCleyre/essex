@@ -29,7 +29,7 @@ def fail(r, out='', err=''):
 
 class ColorApp(Application):
     PROGNAME = green
-    VERSION = '2.0.0' | blue
+    VERSION = '2.0.1' | blue
     COLOR_USAGE = green
     COLOR_GROUPS = {
         'Meta-switches': magenta,
@@ -463,8 +463,8 @@ class EssexUpgrade(Stopper, Starter):
                 ):
                     if run_md5.is_file():
                         if md5(run.read().encode()).hexdigest() != run_md5.read().split()[0]:
-                            self.stop(svc, announce=True)
-                            self.start(svc, announce=True)
+                            self.stop(run.up(), announce=True)
+                            self.start(run.up(), announce=True)
                             break
 
 
