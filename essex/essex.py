@@ -463,8 +463,8 @@ class EssexUpgrade(Stopper, Starter):
                 ):
                     if run_md5.is_file():
                         if md5(run.read().encode()).hexdigest() != run_md5.read().split()[0]:
-                            self.stop(svc, announce=True)
-                            self.start(svc, announce=True)
+                            self.stop(run.up(), announce=True)
+                            self.start(run.up(), announce=True)
                             break
 
 
