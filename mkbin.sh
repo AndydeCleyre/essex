@@ -29,6 +29,6 @@ cd essex/dist
 mkdir -p ESSEX_LICENSES
 wget -O ESSEX_LICENSES/PLUMBUM "https://raw.githubusercontent.com/tomerfiliba/plumbum/master/LICENSE"
 wget -O ESSEX_LICENSES/PYTHON "https://raw.githubusercontent.com/python/cpython/master/LICENSE"
-tar cfJ essex-$version-x86_64.tar.xz essex _essex ESSEX_LICENSES
+tar cfJ essex-$version-musl-x86_64.tar.xz essex _essex ESSEX_LICENSES
 pwd
 ls -lh
