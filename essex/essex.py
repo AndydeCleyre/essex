@@ -497,7 +497,7 @@ class EssexPapertrail(ColorApp):
             f"destination:",
             f"  host: {host}",
             f"  port: {port}",
-            "protocol: tls", sep='\n'
+            f"  protocol: tls", sep='\n'
         )
 
 
