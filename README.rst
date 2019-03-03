@@ -43,7 +43,7 @@ Usage
 
 ::
 
-    essex 2.0.1
+    essex 2.0.2
 
     Simply manage services
 
@@ -56,8 +56,8 @@ Usage
         -v, --version                                          Prints the program's version and quits
 
     Switches:
-        -d, --directory SERVICES_DIRECTORY:path                folder of services to manage; the default is the first existing match from ('./svcs', '~/svcs',
-                                                               '/var/svcs', '/svcs'), unless a colon-delimited SERVICES_PATHS env var exists;
+        -d, --directory SERVICES_DIRECTORY:path                folder of services to manage; the default is the first existing match from ('./svcs',
+                                                               '~/svcs', '/var/svcs', '/svcs'), unless a colon-delimited SERVICES_PATHS env var exists;
         -l, --logs-directory SERVICES_LOGS_DIRECTORY:path      folder of services' log files; the default is SERVICES_DIRECTORY/../svcs-logs
 
     Sub-commands:
@@ -72,16 +72,18 @@ Usage
         pid                                                    Print the PIDs of running services, or s6-svscan (supervision root) if none specified
         print                                                  View (all or specified) services' run, finish, and log commands
         pt                                                     Print a sample Papertrail log_files.yml
-        reload                                                 Restart (all or specified) running services whose run scripts have changed; Depends on the runfile
-                                                               generating an adjacent run.md5 file, like essex-generated runfiles do; Alias for upgrade; Deprecated
+        reload                                                 Restart (all or specified) running services whose run scripts have changed; Depends on
+                                                               the runfile generating an adjacent run.md5 file, like essex-generated runfiles do; Alias
+                                                               for upgrade; Deprecated
         sig                                                    Send a signal to (all or specified) services
         start                                                  Start (all or specified) services
         status                                                 View the current states of (all or specified) services
         stop                                                   Stop (all or specified) services
         sync                                                   Start or stop services to match their configuration
         tree                                                   View the process tree from the supervision root
-        upgrade                                                Restart (all or specified) running services whose run scripts have changed; Depends on the runfile
-                                                               generating an adjacent run.md5 file, like essex-generated runfiles do
+        upgrade                                                Restart (all or specified) running services whose run scripts have changed; Depends on
+                                                               the runfile generating an adjacent run.md5 file, like essex-generated runfiles do
+
 
 Packaging
 ---------
