@@ -487,9 +487,9 @@ class EssexPapertrail(ColorApp):
             host = input("Papertrail host: ")
             port = input("Papertrail port: ")
         entries = '\n'.join(
-            f"  - tag: {log.up().name}\n"
-            f"    path: {log}"
-            for log in (self.parent.logs_dir // '*/current')
+            f"  - tag: {svc.name}\n"
+            f"    path: {self.parent.logs_dir / svc.name / 'current'}"
+            for svc in self.parent.svcs
         )
         print(
             f"files:",
