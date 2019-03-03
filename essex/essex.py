@@ -29,7 +29,7 @@ def fail(r, out='', err=''):
 
 class ColorApp(Application):
     PROGNAME = green
-    VERSION = '2.0.1' | blue
+    VERSION = '2.0.2' | blue
     COLOR_USAGE = green
     COLOR_GROUPS = {
         'Meta-switches': magenta,
@@ -487,9 +487,9 @@ class EssexPapertrail(ColorApp):
             host = input("Papertrail host: ")
             port = input("Papertrail port: ")
         entries = '\n'.join(
-            f"  - tag: {log.up().name}\n"
-            f"    path: {log}"
-            for log in (self.parent.logs_dir // '*/current')
+            f"  - tag: {svc.name}\n"
+            f"    path: {self.parent.logs_dir / svc.name / 'current'}"
+            for svc in self.parent.svcs
         )
         print(
             f"files:",
@@ -497,7 +497,7 @@ class EssexPapertrail(ColorApp):
             f"destination:",
             f"  host: {host}",
             f"  port: {port}",
-            "protocol: tls", sep='\n'
+            f"  protocol: tls", sep='\n'
         )
 
 
