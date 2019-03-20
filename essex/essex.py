@@ -644,6 +644,11 @@ class EssexNew(ColorApp):
         list=True
     )
 
+    human_time = Flag(
+        ['t', 'human-time'],
+        help="Start each log line with an ISO 8601 timestamp, rather than TAI64N"
+    )
+
     # TODO: use skabus-dyntee for socket-logging? maybe
     def main(self, svc_name, cmd):
         self.svc = self.parent.svcs_dir / svc_name
@@ -705,7 +710,11 @@ class EssexNew(ColorApp):
             "Generate hashfile, to detect changes since launch"
         )
         receive = ('s6-log', "Receive process output")
-        timestamp = ('  T', "Start each line with an ISO 8601 timestamp")
+        timestamp = (
+            '  T', "Start each line with an ISO 8601 timestamp"
+        ) if self.human_time else (
+            '  t', "Start each line with a TAI64N timestamp"
+        )
         rotate = (
             f'  s{self.rotate_at * 1024 ** 2}',
             "Archive log when it gets this big (bytes)"
