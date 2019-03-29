@@ -7,7 +7,7 @@ Dependencies:
 
 	- Python 3.6+
 	- Plumbum
-	- s6
+	- s6 != 2.8.0.0
 	- BusyBox or (lsof, psmisc, coreutils)
 	- musl-utils or glibc
 
